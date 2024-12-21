@@ -5,19 +5,23 @@ import Nedis from "./Nedis.mjs"
 
 async function main() {
   const nedis = new Nedis()
+  const { host, port } = nedis.config
+  const url = host.concat(":", port, "> ")
+
   let userInput = ""
 
   while (!isTerminate(userInput)) {
-    userInput = await input("Nedis> ")
-
+    userInput = await input(url)
+    console.log(
+      JSON.stringify({ dataType: "string", command: "get", args: "jhon" })
+    )
     const { command, key, value } = parseCommand(userInput)
 
     switch (command) {
       case "exit":
         break
       case "get":
-        console.log("GET command")
-        console.log(nedis.get(key))
+        console.log(nedis[command](key))
         break
       case "set":
         const result = nedis.set(key, value)
@@ -30,8 +34,11 @@ async function main() {
         console.log("DEL command")
         console.log(nedis.del(key))
         break
+      case "setnx":
+        console.log(nedis.setnx(key, value))
+        break
       default:
-        console.log(`Unknown command '${userInput}'`)
+        console.log(`ERR: Unknown command '${userInput}'\r\n`)
     }
   }
 

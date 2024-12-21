@@ -1,11 +1,20 @@
-import express from "express"
+import net from "net"
 
-const app = express()
+const server = net.createServer()
 
-app.use(express.json())
+server.on("connection", (socket) => {
+  console.log("Client connected")
 
-app.get("/", (req, res) => {
-  res.send("hello world")
+  let reqData = ""
+
+  socket.write(`Nedis> `)
+  socket.on("data", (data) => {
+    reqData = data.toString().trim()
+  })
+  console.log(reqData)
 })
 
-app.listen(6379, () => console.log("listening on 6379"))
+const PORT = process.env.PORT || 6379
+server.listen(PORT, () =>
+  console.log(`Nedis server is listening on port ${PORT}`)
+)

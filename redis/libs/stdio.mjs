@@ -1,4 +1,5 @@
 import readline from "readline"
+import { Buffer } from "node:buffer"
 
 const createInterface = () => {
   return readline.createInterface({
@@ -7,17 +8,19 @@ const createInterface = () => {
   })
 }
 
-const input = () => {
+export const input = (message) => {
   const readlineInterface = createInterface()
-  const msg = "Nedis> "
 
   return new Promise((resolve) => {
-    readlineInterface.question(msg, (answer) => {
+    try {
+      readlineInterface.question(message, (rawUserInput) => {
+        readlineInterface.close()
+        resolve(rawUserInput.trim())
+      })
+    } catch (err) {
+      console.error("Error reading input:", err)
       readlineInterface.close()
-
-      resolve(answer)
-    })
+      reject(err)
+    }
   })
 }
-
-export { input }
