@@ -19,7 +19,9 @@ class Nedis {
     }
 
     this.dataStore = new Map()
-    this.nedisString = new NedisString(this.dataStore)
+    this.expirationTimers = new Map()
+
+    this.nedisString = new NedisString(this.dataStore, this.expirationTimers)
   }
 
   commands = (cmd, args) => {
@@ -79,6 +81,7 @@ class Nedis {
 
   print() {
     console.log(this.dataStore, "\r\n")
+    console.log(this.expirationTimers.get("name"), "\r\n")
   }
 
   exist = (key) => {

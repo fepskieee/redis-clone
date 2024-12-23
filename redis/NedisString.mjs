@@ -7,8 +7,9 @@ class NedisString {
   static ERR_MSG_NOT_STRING = "ERR: value is not a string"
   static ERR_MSG_EXCEED_512MB = "ERR: Exceeds memory limit of 512MB"
 
-  constructor(dataStore) {
+  constructor(dataStore, expirationTimers) {
     this.dataStore = dataStore
+    this.expirationTimers = expirationTimers
   }
 
   get(args) {
@@ -30,7 +31,9 @@ class NedisString {
     if (args.length < 2)
       return console.log("-ERR: Wrong number of arguments for SET command\r\n")
 
-    const [key, value] = args
+    const [key, value, ttl = 10000] = args || []
+    let timeoutId = null
+    let remainingTime = -1
 
     if (!_.isString(value)) {
       return NedisString.ERR_MSG_NOT_STRING
@@ -42,7 +45,35 @@ class NedisString {
       }
     }
 
+    if (this.expirationTimers.has(key)) {
+      clearTimeout(this.expirationTimers.get(key).timeoutId)
+    }
+
+    if (ttl) {
+      let startTime = Date.now()
+
+      const intervalId = setInterval(() => {
+        const elapsedTime = Date.now() - startTime
+        const getRemainingTime = Math.max(ttl - elapsedTime, 0) / 1000
+
+        remainingTime = Math.round(getRemainingTime)
+
+        const timer = this.expirationTimers.get(key)
+        timer.remainingTime = remainingTime
+      }, 1000)
+
+      timeoutId = setTimeout(() => {
+        clearTimeout(this.expirationTimers.get(key).timeoutId)
+        clearInterval(intervalId)
+        this.expirationTimers.delete(key)
+        this.dataStore.delete(key)
+      }, ttl)
+    }
+
     this.dataStore.set(key, { type: "string", value: value })
+    this.expirationTimers.set(key, {
+      timeoutId,
+    })
 
     console.log("OK\r\n")
   }
