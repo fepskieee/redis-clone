@@ -75,11 +75,11 @@ class Nedis {
   //   this.incrby(key)
   // }
 
-  // del = (key) => {
-  //   delete this.data[key]
+  del = (key) => {
+    delete this.data[key]
 
-  //   return "OK\r\n"
-  // }
+    return "OK\r\n"
+  }
 
   exists = (key) => {
     return key in this.data ? "1" : "0"
