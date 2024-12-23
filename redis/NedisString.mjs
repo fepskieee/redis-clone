@@ -7,44 +7,54 @@ class NedisString {
   static ERR_MSG_NOT_STRING = "ERR: value is not a string"
   static ERR_MSG_EXCEED_512MB = "ERR: Exceeds memory limit of 512MB"
 
-  constructor() {
-    this.dataString = {}
+  constructor(dataStore) {
+    this.dataStore = dataStore
   }
 
-  get(key) {
-    const data = this.dataString[key] || "(nil)"
+  get(args) {
+    if (args.length !== 1)
+      return console.log("-ERR: Wrong number of arguments for GET command\r\n")
 
-    return { data }
+    const [key] = args
+
+    if (this.dataStore.get(key).type !== "string") {
+      return console.log(
+        "ERR: WRONGTYPE Operation for keys with non-string values\r\n"
+      )
+    }
+
+    console.log(this.dataStore.get(key).value || "(nil)", "\r\n")
   }
 
-  set(key, value) {
-    if (_.isString(value)) {
-      return { succes: true, msg: ERR_MSG_NOT_STRING }
+  set(args) {
+    if (args.length < 2)
+      return console.log("-ERR: Wrong number of arguments for SET command\r\n")
+
+    const [key, value] = args
+
+    if (!_.isString(value)) {
+      return NedisString.ERR_MSG_NOT_STRING
     } else {
       const byteLength = Buffer.byteLength(value, "utf8")
 
       if (byteLength > NedisString.MAX_MEMORY) {
-        return { succes: true, msg: ERR_MSG_EXCEED_512MB }
+        return { succes: false, msg: NedisString.ERR_MSG_EXCEED_512MB }
       }
     }
 
-    this.dataString[key] = value
+    this.dataStore.set(key, { type: "string", value: value })
 
-    return { sucess: true, msg: MSG_SUCCESS }
+    console.log("OK\r\n")
   }
 
-  delete(key) {
-    delete this.dataString[key]
+  setnx(key, value = " ") {
+    if (this.dataStore.has(key)) {
+      console.log(NedisString.MSG_KEY_EXISTS, "\r\n")
 
-    return { success: true, msg: MSG_SUCCESS }
-  }
-
-  setnx = (key, value = " ") => {
-    if (key in this.dataString) {
-      return MSG_KEY_EXISTS
+      return
     }
 
-    return () => this.set(key, value)
+    this.set(key, value)
   }
 
   mget = (...keys) => {

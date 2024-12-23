@@ -12,34 +12,29 @@ async function main() {
 
   while (!isTerminate(userInput)) {
     userInput = await input(url)
-    console.log(
-      JSON.stringify({ dataType: "string", command: "get", args: "jhon" })
-    )
-    const { command, key, value } = parseCommand(userInput)
-
-    switch (command) {
-      case "exit":
-        break
-      case "get":
-        console.log(nedis[command](key))
-        break
-      case "set":
-        const result = nedis.set(key, value)
-
-        console.log(
-          `\n${COLORS.GREEN}${result}${COLORS.RESET} { "${key}": "${value}" }\n`
-        )
-        break
-      case "del":
-        console.log("DEL command")
-        console.log(nedis.del(key))
-        break
-      case "setnx":
-        console.log(nedis.setnx(key, value))
-        break
-      default:
-        console.log(`ERR: Unknown command '${userInput}'\r\n`)
-    }
+    const { command, args } = parseCommand(userInput)
+    nedis.commands(command, args)
+    // switch (command) {
+    //   case "exit":
+    //     break
+    //   case "get":
+    //     nedis[command](key)
+    //     break
+    //   case "set":
+    //     nedis.set(key, value)
+    //     break
+    //   case "del":
+    //     nedis.del(key)
+    //     break
+    //   case "print":
+    //     nedis.printStore()
+    //     break
+    //   case "setnx":
+    //     console.log(nedis.setnx(key, value))
+    //     break
+    //   default:
+    //     console.log(`ERR: Unknown command '${userInput}'\r\n`)
+    // }
   }
 
   console.log("\nExiting Nedis...\n")

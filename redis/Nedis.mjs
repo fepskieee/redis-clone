@@ -1,3 +1,5 @@
+import NedisString from "./NedisString.mjs"
+
 class Nedis {
   static MAX_MEMORY = 512 * 1024 * 1024
 
@@ -16,38 +18,29 @@ class Nedis {
       longDuration: LONG_DURATION,
     }
 
-    this.data = {}
+    this.dataStore = new Map()
+    this.nedisString = new NedisString(this.dataStore)
   }
 
   commands = (cmd, args) => {
-    if (!cmd in this) return "ERR: Unknown command"
+    if (typeof this[cmd] !== "function") {
+      return "ERR: Unknown command"
+    }
 
-    return this[cmd](...args)
+    this[cmd](args)
   }
 
-  // get = (key) => {
-  //   return this.data[key] || "(nil)\r\n"
-  // }
+  get(args) {
+    this.nedisString.get(args)
+  }
 
-  // set = (key, value) => {
-  //   const byteLength = Buffer.byteLength(value, "utf8")
-  //   if (byteLength > Nedis.MAX_MEMORY) {
-  //     return "ERR: Exceeds memory limit of 512MB"
-  //   }
+  set(args) {
+    this.nedisString.set(args)
+  }
 
-  //   this.data[key] = value
-
-  //   return "OK\r\n"
-  // }
-
-  // setnx = (key, value = " ") => {
-  //   if (key in this.data) {
-  //     return "(integer) 0\r\n"
-  //   }
-
-  //   this.set(key, value)
-  //   return "(integer) 1\r\n"
-  // }
+  setnx(key, value) {
+    this.nedisString.setnx(key, value)
+  }
 
   // mget = (...keys) => {
   //   return keys.map((key, index) => {
@@ -75,20 +68,31 @@ class Nedis {
   //   this.incrby(key)
   // }
 
-  del = (key) => {
-    delete this.data[key]
+  del(key) {
+    if (!this.dataStore.has(key)) {
+      console.log("ERR: Key not found!")
+    }
 
-    return "OK\r\n"
+    this.dataStore.delete(key)
+    console.log("OK\r\n")
   }
 
-  exists = (key) => {
-    return key in this.data ? "1" : "0"
+  print() {
+    console.log(this.dataStore, "\r\n")
+  }
+
+  exist = (key) => {
+    console.log(this.dataStore.has(key), "\r\n")
   }
 
   keys = (limit = 10, offset = 0) => {
-    const allKeys = Object.keys(this.data)
-
-    return allKeys.slice(offset, offset + limit)
+    const filteredDataStore = Array.from(this.dataStore.entries()).slice(
+      offset,
+      limit
+    )
+    filteredDataStore.forEach(([key, value], index) =>
+      console.log(`${index + 1}) ${key}: ${value}`)
+    )
   }
 
   setWithTTL = (key, value, ttl) => {

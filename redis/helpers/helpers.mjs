@@ -1,11 +1,10 @@
 export const isTerminate = (input) => input.trim().toLowerCase() === "exit"
 
 export const parseCommand = (input) => {
-  const userInput = input.trim().toLowerCase()
+  const userInput = input.trim().toLowerCase().split(" ")
 
   return {
-    command: userInput.split(" ")[0],
-    key: userInput.split(" ")[1],
-    value: userInput.split(" ")[2],
+    command: userInput[0],
+    args: userInput.slice(1),
   }
 }
