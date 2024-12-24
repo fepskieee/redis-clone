@@ -31,48 +31,60 @@ class NedisString {
     if (args.length < 2)
       return console.log("-ERR: Wrong number of arguments for SET command\r\n")
 
-    const [key, value, ttl = 10000] = args || []
-    let timeoutId = null
-    let remainingTime = -1
+    const [key, value, ttlArg] = args
+    const ttl = Number.isInteger(ttlArg) && ttlArg > 0 ? ttlArg : 10000
 
     if (!_.isString(value)) {
-      return NedisString.ERR_MSG_NOT_STRING
-    } else {
-      const byteLength = Buffer.byteLength(value, "utf8")
+      return console.log(NedisString.ERR_MSG_NOT_STRING, "\r\n")
+    }
 
-      if (byteLength > NedisString.MAX_MEMORY) {
-        return { succes: false, msg: NedisString.ERR_MSG_EXCEED_512MB }
+    const byteLength = Buffer.byteLength(value, "utf8")
+
+    if (byteLength > NedisString.MAX_MEMORY) {
+      return console.log(NedisString.ERR_MSG_EXCEED_512MB, "\r\n")
+    }
+
+    this.dataStore.set(key, { type: "string", value: value })
+
+    if (this.expirationTimers.has(key)) {
+      const checkExistingTimer = this.expirationTimers.get(key)?.timeoutId
+      if (checkExistingTimer) {
+        clearTimeout(this.expirationTimers.get(key).timeoutId)
+        clearInterval(this.expirationTimers.get(key).intervalId)
+        this.expirationTimers.delete(key)
       }
     }
 
-    if (this.expirationTimers.has(key)) {
-      clearTimeout(this.expirationTimers.get(key).timeoutId)
-    }
+    let timeoutId = null
+    let intervalId = null
+    let remainingTime = null
 
-    if (ttl) {
+    if (Number.isInteger(ttl) && ttl > 0) {
       let startTime = Date.now()
 
-      const intervalId = setInterval(() => {
+      intervalId = setInterval(() => {
         const elapsedTime = Date.now() - startTime
-        const getRemainingTime = Math.max(ttl - elapsedTime, 0) / 1000
+        remainingTime = Math.max(ttl - elapsedTime, 0) / 1000
 
-        remainingTime = Math.round(getRemainingTime)
+        remainingTime = Math.round(remainingTime)
 
-        const timer = this.expirationTimers.get(key)
-        timer.remainingTime = remainingTime
+        const timerKey = this.expirationTimers.get(key)
+        if (timerKey) {
+          timerKey.remainingTime = remainingTime
+        }
       }, 1000)
 
       timeoutId = setTimeout(() => {
         clearTimeout(this.expirationTimers.get(key).timeoutId)
-        clearInterval(intervalId)
+        clearInterval(this.expirationTimers.get(key).intervalId)
         this.expirationTimers.delete(key)
         this.dataStore.delete(key)
       }, ttl)
     }
 
-    this.dataStore.set(key, { type: "string", value: value })
     this.expirationTimers.set(key, {
       timeoutId,
+      intervalId,
     })
 
     console.log("OK\r\n")

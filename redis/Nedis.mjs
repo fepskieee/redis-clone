@@ -29,6 +29,11 @@ class Nedis {
       return "ERR: Unknown command"
     }
 
+    // create a map dictionary for each data type commands
+    // create a method for each data types and execute the command base on input
+    // isStringCommand(args) {
+    //   this.nedisString[cmd](args)
+    // }
     this[cmd](args)
   }
 
@@ -80,8 +85,16 @@ class Nedis {
   }
 
   print() {
-    console.log(this.dataStore, "\r\n")
-    console.log(this.expirationTimers.get("name"), "\r\n")
+    console.log("store: ", this.dataStore, "\r\n")
+  }
+
+  ttl(args) {
+    const [key] = args || []
+    console.log(
+      "timers:",
+      this.expirationTimers.get(key)?.remainingTime,
+      "\r\n"
+    )
   }
 
   exist = (key) => {
