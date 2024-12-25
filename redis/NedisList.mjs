@@ -7,8 +7,7 @@ class NedisList {
   lpush(args) {
     const [key, values] = args
 
-    this.dataStore.set(key, [...values])
-    console.log(this.dataStore.get(key))
+    this.dataStore.set(key, values)
   }
 
   rpush(key, ...values) {

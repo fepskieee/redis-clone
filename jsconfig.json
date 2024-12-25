@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "module": "ES6",
+    "target": "ESNext",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "moduleResolution": "node"
+  },
+  "include": ["tests/**/*.js", "src/**/*.js"],
+  "exclude": ["**/node_modules/**"]
+}
