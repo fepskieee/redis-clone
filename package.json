@@ -6,7 +6,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node --watch server.mjs",
-    "redis": "node --watch ./redis/cli.mjs",
+    "nedis-cli": "node --watch ./redis/cli.mjs",
     "sample": "node --watch ./redis/Sample.mjs",
     "telnet": "telnet 127.0.0.1 6379"
   },
