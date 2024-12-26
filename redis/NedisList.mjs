@@ -1,13 +1,41 @@
 class NedisList {
+  static ERR_MSG_ARGS = "ERR wrong number of arguments for 'LPUSH' command"
+
   constructor(dataStore, expirationTimers) {
     this.dataStore = dataStore
     this.expirationTimers = expirationTimers
   }
 
   lpush(args) {
-    const [key, values] = args
+    if (args.length < 2) {
+      throw new Error(NedisList.ERR_MSG_ARGS)
+    }
 
-    this.dataStore.set(key, values)
+    const [key, data] = args
+
+    if (data === null) return 0
+
+    if (!this.dataStore.has(key)) {
+      this.dataStore.set(key, { type: "list", value: [] })
+    }
+
+    this.dataStore.get(key).value.push(JSON.stringify(data))
+
+    return this.dataStore.get(key).value.length
+  }
+
+  lpop(key) {
+    if (!Array.isArray(this.dataStore[key])) return null
+    return this.dataStore[key].shift() || null
+  }
+
+  llen(key) {
+    return Array.isArray(this.dataStore[key]) ? this.dataStore[key].length : 0
+  }
+
+  lrange(args) {
+    const [key, start, stop] = args
+    console.table(key, start, stop)
   }
 
   rpush(key, ...values) {
@@ -18,18 +46,9 @@ class NedisList {
     return this.dataStore[key].length
   }
 
-  lpop(key) {
-    if (!Array.isArray(this.dataStore[key])) return null
-    return this.dataStore[key].shift() || null
-  }
-
   rpop(key) {
     if (!Array.isArray(this.dataStore[key])) return null
     return this.dataStore[key].pop() || null
-  }
-
-  llen(key) {
-    return Array.isArray(this.dataStore[key]) ? this.dataStore[key].length : 0
   }
 
   lindex(key, index) {

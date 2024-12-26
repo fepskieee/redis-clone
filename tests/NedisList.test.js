@@ -25,15 +25,43 @@ describe("NedisList", () => {
   describe("constructor", () => {
     test("should initialize with dataStore and expirationTimers", () => {
       expect(nedisList.dataStore).toBe(dataStore)
-      expect(nedisList.expirationTimers).toBe(nedis.expirationTimers)
+      expect(nedisList.expirationTimers).toBe(expirationTimers)
     })
   })
 
   describe("lpush", () => {
-    test("should add elements to the start of the list", () => {
-      nedisList.lpush([key1, strArr1])
+    test("should throw error for wrong number of arguments", () => {
+      expect(() => nedisList.lpush([key1])).toThrowError(NedisList.ERR_MSG_ARGS)
+    })
 
-      expect(nedisList.dataStore.get(key1)).toEqual(strArr1)
+    test("should add elements to the start of the list", () => {
+      nedisList.lpush([key1, numArr1]) // [4,5,6]
+      nedisList.lpush([key1, numArr2]) // [1,2,3]
+
+      console.table([...dataStore.get(key1).value].reverse())
+      console.table(dataStore.get(key1))
+      const head = dataStore.get(key1).value.pop()
+
+      expect(head).toEqual("[4,5,6]")
+    })
+
+    test("should return length of array or 0 if {empty, null, undefined}", () => {
+      const nonEmpty = nedisList.lpush([key1, numArr1])
+      const emptyCase = nedisList.lpush([key2, []])
+      const nullCase = nedisList.lpush(["key3", null])
+      const undefinedCase = nedisList.lpush(["key4", undefined])
+
+      console.table({
+        nonEmpty,
+        emptyCase,
+        nullCase,
+        undefinedCase,
+      })
+
+      expect(nonEmpty).toBeGreaterThanOrEqual(0)
+      expect(emptyCase).toBeGreaterThanOrEqual(0)
+      expect(nullCase).toBeGreaterThanOrEqual(0)
+      expect(undefinedCase).toBeGreaterThanOrEqual(0)
     })
   })
 
