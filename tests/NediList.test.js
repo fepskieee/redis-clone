@@ -1,4 +1,4 @@
-import NedisList from "../redis/NedisList.mjs"
+import NediList from "../redis/NediList.mjs"
 import Nedis from "../redis/Nedis.mjs"
 
 describe("NedisList", () => {
@@ -19,7 +19,7 @@ describe("NedisList", () => {
     nedis = new Nedis()
     dataStore = nedis.dataStore
     expirationTimers = nedis.expirationTimers
-    nedisList = new NedisList(nedis.dataStore, nedis.expirationTimers)
+    nedisList = new NediList(nedis.dataStore, nedis.expirationTimers)
   })
 
   describe("constructor", () => {
@@ -31,18 +31,15 @@ describe("NedisList", () => {
 
   describe("lpush", () => {
     test("should throw error for wrong number of arguments", () => {
-      expect(() => nedisList.lpush([key1])).toThrowError(NedisList.ERR_MSG_ARGS)
+      expect(() => nedisList.lpush([key1])).toThrowError(NediList.ERR_MSG_ARGS)
     })
 
     test("should add elements to the start of the list", () => {
-      nedisList.lpush([key1, numArr1]) // [4,5,6]
-      nedisList.lpush([key1, numArr2]) // [1,2,3]
+      nedisList.lpush([key1, [1, 2, 3]])
+
+      expect(dataStore.get(key1).value).toEqual(["1", "2", "3"])
 
       console.table([...dataStore.get(key1).value].reverse())
-      console.table(dataStore.get(key1))
-      const head = dataStore.get(key1).value.pop()
-
-      expect(head).toEqual("[4,5,6]")
     })
 
     test("should return length of array or 0 if {empty, null, undefined}", () => {
@@ -94,4 +91,3 @@ describe("NedisList", () => {
     })
   })
 })
-

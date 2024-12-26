@@ -1,5 +1,5 @@
-import NedisString from "./NedisString.mjs"
-import NedisList from "./NedisList.mjs"
+import NediString from "./NediString.mjs"
+import NediList from "./NediList.mjs"
 
 class Nedis {
   static MAX_MEMORY = 512 * 1024 * 1024
@@ -22,8 +22,8 @@ class Nedis {
     this.dataStore = new Map()
     this.expirationTimers = new Map()
 
-    this.nediString = new NedisString(this.dataStore, this.expirationTimers)
-    this.nediList = new NedisList(this.dataStore, this.expirationTimers)
+    this.nediString = new NediString(this.dataStore, this.expirationTimers)
+    this.nediList = new NediList(this.dataStore, this.expirationTimers)
   }
 
   commands = (cmd, args) => {
@@ -51,6 +51,9 @@ class Nedis {
     this.nediString.setnx(key, value)
   }
 
+  lpush(args) {
+    this.nediList.lpush(args)
+  }
   // mget = (...keys) => {
   //   return keys.map((key, index) => {
   //     let value = get(key)

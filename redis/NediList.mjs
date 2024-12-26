@@ -1,4 +1,4 @@
-class NedisList {
+class NediList {
   static ERR_MSG_ARGS = "ERR wrong number of arguments for 'LPUSH' command"
 
   constructor(dataStore, expirationTimers) {
@@ -8,7 +8,7 @@ class NedisList {
 
   lpush(args) {
     if (args.length < 2) {
-      throw new Error(NedisList.ERR_MSG_ARGS)
+      throw new Error(NediList.ERR_MSG_ARGS)
     }
 
     const [key, data] = args
@@ -19,7 +19,9 @@ class NedisList {
       this.dataStore.set(key, { type: "list", value: [] })
     }
 
-    this.dataStore.get(key).value.push(JSON.stringify(data))
+    const stringifiedData = data.map((element) => `${element}`)
+
+    this.dataStore.get(key).value.push(...stringifiedData)
 
     return this.dataStore.get(key).value.length
   }
@@ -57,4 +59,4 @@ class NedisList {
   }
 }
 
-export default NedisList
+export default NediList

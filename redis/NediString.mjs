@@ -1,6 +1,6 @@
 import _ from "lodash"
 
-class NedisString {
+class NediString {
   static MAX_MEMORY = 512 * 1024 * 1024
   static MSG_SUCCESS = "OK"
   static MSG_KEY_EXISTS = "Key already exists"
@@ -35,13 +35,13 @@ class NedisString {
     const ttl = Number.isInteger(ttlArg) && ttlArg > 0 ? ttlArg : 10000
 
     if (!_.isString(value)) {
-      return console.log(NedisString.ERR_MSG_NOT_STRING, "\r\n")
+      return console.log(NediString.ERR_MSG_NOT_STRING, "\r\n")
     }
 
     const byteLength = Buffer.byteLength(value, "utf8")
 
-    if (byteLength > NedisString.MAX_MEMORY) {
-      return console.log(NedisString.ERR_MSG_EXCEED_512MB, "\r\n")
+    if (byteLength > NediString.MAX_MEMORY) {
+      return console.log(NediString.ERR_MSG_EXCEED_512MB, "\r\n")
     }
 
     this.dataStore.set(key, { type: "string", value: value })
@@ -92,7 +92,7 @@ class NedisString {
 
   setnx(key, value = " ") {
     if (this.dataStore.has(key)) {
-      console.log(NedisString.MSG_KEY_EXISTS, "\r\n")
+      console.log(NediString.MSG_KEY_EXISTS, "\r\n")
 
       return
     }
@@ -107,4 +107,4 @@ class NedisString {
   }
 }
 
-export default NedisString
+export default NediString
