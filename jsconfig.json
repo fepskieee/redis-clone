@@ -3,12 +3,13 @@
     "module": "ES6",
     "target": "ESNext",
     "strict": true,
+    "types": ["vitest", "vitest/globals"],
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["tests/**/*.js", "src/**/*.js"],
+  "include": ["**/tests/**/*.js", "**/src/**/*.js"],
   "exclude": ["**/node_modules/**"]
 }
