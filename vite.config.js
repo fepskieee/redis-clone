@@ -10,6 +10,8 @@ export default defineConfig({
   test: {
     globals: true,
     environment: "node",
+    reporters: ["default"],
+    silent: false,
     include: ["**/*.{test, spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}"],
     exclude: ["**/node_modules/**"],
   },

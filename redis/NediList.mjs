@@ -1,5 +1,9 @@
 class NediList {
-  static ERR_MSG_ARGS = "ERR wrong number of arguments for 'LPUSH' command"
+  static ERR_THROW_NUMBER_OF_ARGS = (commandName) => {
+    throw new Error(
+      `ERR wrong number of arguments for '${commandName}' command`
+    )
+  }
 
   constructor(dataStore, expirationTimers) {
     this.dataStore = dataStore
@@ -7,28 +11,53 @@ class NediList {
   }
 
   lpush(args) {
-    if (args.length < 2) {
-      throw new Error(NediList.ERR_MSG_ARGS)
-    }
-
     const [key, data] = args
 
-    if (data === null) return 0
+    if (args.length < 2 || data === null || data === undefined) {
+      NediList.ERR_THROW_NUMBER_OF_ARGS("lpush")
+    }
 
     if (!this.dataStore.has(key)) {
-      this.dataStore.set(key, { type: "list", value: [] })
+      this.dataStore.set(key, { type: "list", values: [] })
     }
 
     const stringifiedData = data.map((element) => `${element}`)
 
-    this.dataStore.get(key).value.push(...stringifiedData)
+    this.dataStore.get(key).values.push(...stringifiedData)
 
-    return this.dataStore.get(key).value.length
+    return this.dataStore.get(key).values.length
   }
 
-  lpop(key) {
-    if (!Array.isArray(this.dataStore[key])) return null
-    return this.dataStore[key].shift() || null
+  /**
+   * Removes and returns the first `count` elements from the list stored at `key`.
+   * If `count` is not specified, it defaults to 1.
+   * If the key does not exist or the list is empty, it returns null.
+   *
+   * @param {Array} params - An array containing the key and optionally the count.
+   * @param {string} params[0] - The key of the list.
+   * @param {number} [params[1]=1] - The number of elements to remove.
+   * @returns {Array|null} An array of the removed elements, or null if the key does not exist or the list is empty.
+   */
+  lpop([key, count = 1]) {
+    if (key === undefined) {
+      NediList.ERR_THROW_NUMBER_OF_ARGS("lpop")
+    }
+
+    if (!this.dataStore.has(key)) return null
+    if (this.dataStore.get(key).values.length === 0) return null
+
+    const arrCurrentValues = [...this.dataStore.get(key).values]
+    const arrPoppedElements = []
+
+    for (let index = 0; index < count; index++) {
+      if (index >= arrCurrentValues.length) {
+        break
+      }
+
+      arrPoppedElements.push(this.dataStore.get(key).values.pop())
+    }
+
+    return [...arrPoppedElements]
   }
 
   llen(key) {

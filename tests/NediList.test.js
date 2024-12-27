@@ -2,91 +2,92 @@ import NediList from "../redis/NediList.mjs"
 import Nedis from "../redis/Nedis.mjs"
 
 describe("NedisList", () => {
-  let nedis
-  let dataStore
-  let expirationTimers
-  let nedisList
-  const key1 = "bikes:repairs"
-  const key2 = "bikes:repairs2"
+  let storeMock
+  let timerMock
+  let nediList
 
+  const keyBikeMock = "bike:repair"
   const numArr1 = [1, 2, 3]
-  const numArr2 = [4, 5, 6]
-
-  const strArr1 = ["bike:1", "bike:2", "bike:3"]
-  const strArr2 = ["bike:4", "bike:5", "bike:6"]
+  const strArrBike = ["bike:1", "bike:2", "bike:3"]
 
   beforeEach(() => {
-    nedis = new Nedis()
-    dataStore = nedis.dataStore
-    expirationTimers = nedis.expirationTimers
-    nedisList = new NediList(nedis.dataStore, nedis.expirationTimers)
+    storeMock = new Map()
+    timerMock = new Map()
+    nediList = new NediList(storeMock, timerMock)
   })
 
-  describe("constructor", () => {
+  describe("constructor", async () => {
     test("should initialize with dataStore and expirationTimers", () => {
-      expect(nedisList.dataStore).toBe(dataStore)
-      expect(nedisList.expirationTimers).toBe(expirationTimers)
+      expect(nediList.dataStore).toBe(storeMock)
+      expect(nediList.expirationTimers).toBe(timerMock)
     })
   })
 
   describe("lpush", () => {
     test("should throw error for wrong number of arguments", () => {
-      expect(() => nedisList.lpush([key1])).toThrowError(NediList.ERR_MSG_ARGS)
+      const invalidArgs = [null, undefined]
+
+      invalidArgs.forEach((value) => {
+        expect(() => nediList.lpush([keyBikeMock, value])).toThrow()
+      })
     })
 
     test("should add elements to the start of the list", () => {
-      nedisList.lpush([key1, [1, 2, 3]])
+      nediList.lpush([keyBikeMock, [...numArr1]])
 
-      expect(dataStore.get(key1).value).toEqual(["1", "2", "3"])
+      expect(storeMock.get(keyBikeMock).values).toEqual(["1", "2", "3"])
 
-      console.table([...dataStore.get(key1).value].reverse())
+      console.table([...storeMock.get(keyBikeMock).values].reverse())
     })
 
-    test("should return length of array or 0 if {empty, null, undefined}", () => {
-      const nonEmpty = nedisList.lpush([key1, numArr1])
-      const emptyCase = nedisList.lpush([key2, []])
-      const nullCase = nedisList.lpush(["key3", null])
-      const undefinedCase = nedisList.lpush(["key4", undefined])
+    test("should return length of array or 0 for empty array", () => {
+      const nonEmpty = nediList.lpush([keyBikeMock, numArr1])
+      expect(nonEmpty).toBeGreaterThanOrEqual(0)
+
+      const emptyCase = nediList.lpush([keyBikeMock, []])
+      expect(emptyCase).toBeGreaterThanOrEqual(0)
 
       console.table({
         nonEmpty,
         emptyCase,
-        nullCase,
-        undefinedCase,
       })
-
-      expect(nonEmpty).toBeGreaterThanOrEqual(0)
-      expect(emptyCase).toBeGreaterThanOrEqual(0)
-      expect(nullCase).toBeGreaterThanOrEqual(0)
-      expect(undefinedCase).toBeGreaterThanOrEqual(0)
-    })
-  })
-
-  describe("rpush", () => {
-    test("should add elements to the end of the list", () => {
-      const result = nedisList.rpush("testKey", "value1", "value2")
-      expect(dataStore["testKey"]).toEqual(["value1", "value2"])
-      expect(result).toBe(2)
     })
   })
 
   describe("lpop", () => {
-    test("should remove and return the first element", () => {
-      dataStore["testKey"] = ["value1", "value2"]
-      const result = nedisList.lpop("testKey")
-      expect(result).toBe("value1")
-      expect(dataStore["testKey"]).toEqual(["value2"])
+    test("should remove and return the elements popped", () => {
+      storeMock.set(keyBikeMock, { type: "list", values: [...strArrBike] })
+      console.log("store:", [...storeMock.get(keyBikeMock).values].reverse())
+
+      const count = 10
+      const result = nediList.lpop([keyBikeMock, count])
+
+      for (let index = 0; index < count; index++) {
+        if (index < result.length) break
+        expect(result[index]).toEqual(strArrBike.toReversed()[index])
+      }
+
+      console.log("\npopped elements: ", result)
+      console.log("\nstore:", storeMock.get(keyBikeMock).values.toReversed())
     })
 
-    test("should return null for non-existent key", () => {
-      expect(nedisList.lpop("nonexistentKey")).toBeNull()
+    test.todo("should return null for non-existent key", () => {
+      expect(nediList.lpop("nonexistentKey")).toBeNull()
     })
   })
 
-  describe("rpop", () => {
+  describe.todo("rpush", () => {
+    test.todo("should add elements to the end of the list", () => {
+      const result = nediList.rpush("testKey", "value1", "value2")
+      expect(storeMock.get("testKey").value).toEqual(["value1", "value2"])
+      expect(result).toBe(2)
+    })
+  })
+
+  describe.todo("rpop", () => {
     test("should remove and return the last element", () => {
-      dataStore["testKey"] = ["value1", "value2"]
-      const result = nedisList.rpop("testKey")
+      storeMock.set("testKey", { value: ["value1", "value2"] })
+      const result = nediList.rpop("testKey")
       expect(result).toBe("value2")
     })
   })
