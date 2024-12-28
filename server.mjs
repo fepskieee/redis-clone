@@ -1,20 +1,40 @@
 import net from "net"
+import { log } from "./src/config/logger.mjs"
+import { getIPv4, getFilename } from "./src/utils/helpers.mjs"
 
-const server = net.createServer()
+const port = process.env.PORT || 6379
+const host = process.env.PORT || "127.0.0.1"
+const namespace = getFilename(import.meta.url)
 
-server.on("connection", (socket) => {
-  console.log("Client connected")
+const server = net.createServer((socket) => {
+  const ipv4 = getIPv4(socket.remoteAddress)
+  const clientInfo = {
+    ip: ipv4,
+    port: socket.port,
+    id: `${ipv4}:${port}`,
+  }
 
-  let reqData = ""
+  log.info(namespace, `Client has connected from ${clientInfo.id}`)
+  socket.write(`${clientInfo.id}> `)
 
-  socket.write(`Nedis> `)
+  let bufferData = ""
   socket.on("data", (data) => {
-    reqData = data.toString().trim()
+    log.info(`receive data: ${data}`)
   })
-  console.log(reqData)
+
+  socket.on("end", () => {
+    log.info(namespace, "Client disconnected")
+  })
+
+  socket.on("error", (err) => {
+    log.error(namespace, err, "Socket error")
+  })
 })
 
-const PORT = process.env.PORT || 6379
-server.listen(PORT, () =>
-  console.log(`Nedis server is listening on port ${PORT}`)
+server.on("error", (err) => {
+  log.error("server error", err)
+})
+
+server.listen(port, host, () =>
+  log.info(namespace, `Nedis server is listening on ${host}:${port}`)
 )
