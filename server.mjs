@@ -17,9 +17,19 @@ const server = net.createServer((socket) => {
   log.info(namespace, `Client has connected from ${clientInfo.id}`)
   socket.write(`${clientInfo.id}> `)
 
-  let bufferData = ""
   socket.on("data", (data) => {
-    log.info(`receive data: ${data}`)
+    const input = data.toString()
+
+    const [cmd, ...args] = input.split(" ")
+
+    let response = ""
+    switch (cmd.toUpperCase()) {
+      case "SET":
+        response = "OK\r\n"
+        break
+      default:
+        response = "ERR unknown command\r\n"
+    }
   })
 
   socket.on("end", () => {
@@ -27,7 +37,7 @@ const server = net.createServer((socket) => {
   })
 
   socket.on("error", (err) => {
-    log.error(namespace, err, "Socket error")
+    log.error(namespace, err, `error msg: ${err.message}`)
   })
 })
 
