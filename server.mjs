@@ -1,7 +1,5 @@
-// <built-in modules>
 import net from "net"
 
-// <internal modules>
 import { log } from "./src/config/logger.mjs"
 import { getIPv4, getFilename } from "./src/utils/helpers.mjs"
 
