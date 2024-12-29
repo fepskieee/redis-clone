@@ -1,8 +1,8 @@
 import pino from "pino"
 import { getServerTimestamp } from "../utils/helpers.mjs"
 
-const createLogger = (namespace) => {
-  return pino({
+export const logger = (namespace) => {
+  const createPino = pino({
     name: namespace,
     base: { pid: undefined },
     timestamp: () => `,"time":"${getServerTimestamp()}"`,
@@ -13,13 +13,13 @@ const createLogger = (namespace) => {
       ],
     },
   })
-}
 
-export const log = {
-  info: (namespace, ...args) => createLogger(namespace).info(...args),
-  error: (namespace, ...args) => createLogger(namespace).error(...args),
-  warn: (namespace, ...args) => createLogger(namespace).warn(...args),
-  debug: (namespace, ...args) => createLogger(namespace).debug(...args),
+  return {
+    info: (...msg) => createPino.info(...msg),
+    error: (...msg) => createPino.error(...msg),
+    warn: (...args) => createPino.warn(...args),
+    debug: (...args) => createPino.debug(...args),
+  }
 }
 
 export const logWithLine = (message) => {
@@ -32,5 +32,3 @@ export const logWithLine = (message) => {
     )}`
   )
 }
-
-export default createLogger
