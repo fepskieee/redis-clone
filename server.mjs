@@ -1,9 +1,12 @@
+// <built-in modules>
 import net from "net"
+
+// <internal modules>
 import { log } from "./src/config/logger.mjs"
 import { getIPv4, getFilename } from "./src/utils/helpers.mjs"
 
+const host = process.env.HOST || "127.0.0.1"
 const port = process.env.PORT || 6379
-const host = process.env.PORT || "127.0.0.1"
 const namespace = getFilename(import.meta.url)
 
 const server = net.createServer((socket) => {
