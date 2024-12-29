@@ -11,7 +11,8 @@
     "memurai-cli": "memurai-cli -h 127.0.0.1 -p 6379",
     "sample": "node --watch ./redis/Sample.mjs",
     "telnet": "telnet 127.0.0.1 6379",
-    "telnet:script": "bash -c 'if [ -f \"./telnet.sh\" ]; then ./telnet.sh; else telnet 127.0.0.1 6379; fi'",
+    "ncat": "ncat 127.0.0.1 6379",
+    "ncat:script": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
     "test": "vitest --watch",
     "test:ui": "vitest --watch --ui"
   },
