@@ -37,12 +37,12 @@ const server = net.createServer((socket) => {
   })
 
   socket.on("error", (err) => {
-    log.error(namespace, err, `error msg: ${err.message}`)
+    log.error(namespace, err, err.message)
   })
 })
 
 server.on("error", (err) => {
-  log.error("server error", err)
+  log.error(namespace, err, err.message)
 })
 
 server.listen(port, host, () =>
