@@ -7,12 +7,12 @@
   "scripts": {
     "start": "node --watch server.mjs",
     "nedis-cli": "node --watch ./redis/cli.mjs",
+    "ncat": "ncat 127.0.0.1 6379",
+    "ncat:script": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
+    "telnet": "telnet 127.0.0.1 6379",
     "redis-cli": "wsl redis-cli -h 127.0.0.1 -p 6379",
     "memurai-cli": "memurai-cli -h 127.0.0.1 -p 6379",
     "sample": "node --watch ./redis/Sample.mjs",
-    "telnet": "telnet 127.0.0.1 6379",
-    "ncat": "ncat 127.0.0.1 6379",
-    "ncat:script": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
     "test": "vitest --watch",
     "test:ui": "vitest --watch --ui"
   },
