@@ -3,12 +3,15 @@ import net from "net"
 import { log } from "./src/config/logger.mjs"
 import { getIPv4, getFilename } from "./src/utils/helpers.mjs"
 
+const server = net.createServer()
 const host = process.env.HOST || "127.0.0.1"
 const port = process.env.PORT || 6379
+
 const namespace = getFilename(import.meta.url)
 
-const server = net.createServer((socket) => {
+server.on("connection", (socket) => {
   const ipv4 = getIPv4(socket.remoteAddress)
+
   const clientInfo = {
     ip: ipv4,
     port: socket.port,
@@ -16,6 +19,7 @@ const server = net.createServer((socket) => {
   }
 
   log.info(namespace, `Client has connected from ${clientInfo.id}`)
+
   socket.write(`${clientInfo.id}> `)
 
   socket.on("data", (data) => {
