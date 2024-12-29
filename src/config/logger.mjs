@@ -5,7 +5,7 @@ const createLogger = (namespace) => {
   return pino({
     name: namespace,
     base: { pid: undefined },
-    timestamp: () => `,"time":"${getServerTimestamp}"`,
+    timestamp: () => `,"time":"${getServerTimestamp()}"`,
     transport: {
       targets: [
         { target: "pino-pretty" },
@@ -26,7 +26,11 @@ export const logWithLine = (message) => {
   const error = new Error()
   const stack = error.stack.split("\n")
   const lineNumber = stack[2].match(/:(\d+):\d+/)
-  console.log(`(Line: ${lineNumber ? lineNumber[1] : "unknown"}) ${message}`)
+  console.log(
+    `(Line: ${lineNumber ? lineNumber[1] : "unknown"}) ${JSON.stringify(
+      message
+    )}`
+  )
 }
 
 export default createLogger

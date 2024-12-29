@@ -1,7 +1,7 @@
 import path from "path"
 import { fileURLToPath } from "url"
 
-export const getServerTimestamp = new Date().toISOString()
+export const getServerTimestamp = () => new Date().toISOString()
 
 export const getFilename = (url) => {
   const __filename = fileURLToPath(url)
