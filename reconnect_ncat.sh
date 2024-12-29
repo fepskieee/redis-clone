@@ -14,7 +14,7 @@ while true; do
   ncat -z $SERVER $PORT
 
   if [ $? -eq 0 ]; then
-    ncat $SERVER $PORT 2>error_log.txt
+    ncat $SERVER $PORT 2>ncat_logs.txt
     START_TIME=$(date +%s)
   else
     CURRENT_TIME=$(date +%s)
