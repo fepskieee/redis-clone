@@ -26,4 +26,4 @@ dist-ssr
 .env
 
 ncat_logs.txt
-RESP3.md
+RESP*.md
