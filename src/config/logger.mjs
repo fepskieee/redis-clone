@@ -22,13 +22,13 @@ export const logger = (namespace) => {
   }
 }
 
-export const logWithLine = (message) => {
+export const logWithLine = (...message) => {
   const error = new Error()
   const stack = error.stack.split("\n")
   const lineNumber = stack[2].match(/:(\d+):\d+/)
   console.log(
     `(Line: ${lineNumber ? lineNumber[1] : "unknown"}) ${JSON.stringify(
-      message
+      ...message
     )}`
   )
 }

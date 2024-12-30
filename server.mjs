@@ -1,14 +1,13 @@
 import net from "net"
-
 import { logger, logWithLine } from "./src/config/logger.mjs"
 import { setClient, deleteClient } from "./src/config/clients.mjs"
-import { getFilename } from "./src/utils/helpers.mjs"
+import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
 const host = process.env.HOST || "127.0.0.1"
 const port = process.env.PORT || 6379
 
-const namespace = getFilename(import.meta.url)
+const namespace = getCurrentFilename(import.meta.url)
 const serverLogger = logger(namespace)
 
 server.on("connection", (socket) => {
@@ -39,13 +38,11 @@ server.on("connection", (socket) => {
   setClient(clientInfo.id, clientInfo)
   socket.write(`${serverInfo.id}> `)
 
-  let buffer = ""
-
   socket.on("data", (data) => {
-    buffer += data.toString()
+    const buffer = data.toString()
 
     const [cmd, args] = buffer.trim().split(" ")
-    logWithLine(cmd)
+    logWithLine(cmd, args)
 
     let response = ""
     switch (cmd.toUpperCase()) {
@@ -56,31 +53,23 @@ server.on("connection", (socket) => {
         response = "ERR unknown command\r\n"
     }
 
-    buffer = ""
     socket.write(`${serverInfo.id}> `)
   })
 
   socket.on("end", () => {
-    serverLogger.info(`Socket connection ends ${clientInfo.id}`)
-    socket.end()
+    serverLogger.info(`${clientInfo.id} finished sending data...`)
   })
 
   socket.on("close", () => {
-    serverLogger.info(`Socket connection closing ${clientInfo.id}`)
+    serverLogger.info(`Client disconnected ${clientInfo.id}`)
     deleteClient(clientInfo.id)
   })
 
   socket.on("error", (err) => {
-    switch (err.code) {
-      case "ECONNRESET":
-        serverLogger.error(
-          err,
-          `Client disconnected ${clientInfo.id} [${err.code}]`
-        )
-        break
-      default:
-        serverLogger.error(`Client disconnected ${clientInfo.id} [${err.code}]`)
-    }
+    serverLogger.error(
+      err,
+      `Client disconnected ${clientInfo.id} [${err.code}]`
+    )
   })
 })
 
