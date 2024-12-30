@@ -13,5 +13,5 @@ export const deleteClient = (key) => {
 }
 
 export const getClientMap = () => {
-  return new Map(clientMap)
+  return structuredClone(clientMap)
 }
