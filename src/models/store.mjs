@@ -16,11 +16,11 @@ export const keys = () => {
   return structuredClone(storeMap)
 }
 
-const store = () => ({
+const store = {
   get,
   set,
   del,
   keys,
-})
+}
 
 export default store
