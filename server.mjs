@@ -21,19 +21,14 @@ server.on("connection", (socket) => {
   }
 
   setClient(clientInfo.id, clientInfo)
-  const totalClient = getClientMap
-  serverLogger.info(
-    `[${totalClient.size}] New client connected ${clientInfo.id}`
-  )
+  serverLogger.info(`New client connected ${clientInfo.id}`)
 
   socket.on("data", (data) => {
     const buffer = data.toString()
 
-    serverLogger.info(`${buffer}`)
-
-    const [cmd] = buffer.trim().split(" ")
-
-    socket.write("+PONG")
+    const cmd = buffer.split("\r\n")
+    serverLogger.info(cmd)
+    socket.write(`+OK\r\n`)
   })
 
   socket.on("end", () => {
@@ -50,7 +45,7 @@ server.on("connection", (socket) => {
   socket.on("error", (err) => {
     serverLogger.error(
       err,
-      `Client disconnected ${clientInfo.id} [${err.code}]`
+      `Client disconnected ${clientInfo.id} (${err.code})`
     )
   })
 })
