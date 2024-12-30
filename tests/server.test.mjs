@@ -1,28 +1,52 @@
 import { describe, test, expect, vi, beforeEach, afterEach } from "vitest"
 import net from "net"
 import { setClient, deleteClient } from "../src/config/clients.mjs"
-import { logger } from "../src/config/logger.mjs"
-import { getCurrentFilename } from "../src/utils/helpers.mjs"
 
 vi.mock("./src/config/clients.mjs")
 vi.mock("./src/config/logger.mjs")
-vi.mock("./src/utils/helpers.mjs")
 
-describe("Redis Server", () => {
-  let server
+const port = 6379
+const host = "127.0.0.1"
+
+describe("Nedis Server", () => {
   let client
 
-  beforeEach(() => {
-    server = net.createServer()
-    server.listen(6379, "127.0.0.1")
+  beforeEach((done) => {
     client = new net.Socket()
   })
 
   afterEach(() => {
-    server.close()
     client.destroy()
     vi.clearAllMocks()
   })
+
+  test('should respond pong when client sent "ping"', async () => {
+    const result = await new Promise((resolve, reject) => {
+      client.connect(port, host, () => {
+        client.write("PING\r\n")
+      })
+
+      client.on("data", (data) => {
+        try {
+          const response = data.toString()
+          resolve(response)
+        } catch (error) {
+          reject("not OK")
+        }
+      })
+
+      client.on("error", (err) => {
+        reject("Connection failed")
+      })
+
+      client.setTimeout(5000, () => {
+        reject("Connection timeout")
+      })
+    })
+
+    console.log(result)
+    expect(`${result}`).toEqual("+PONG")
+  }, 5000)
 
   test("should connect client and handle data", (done) => {
     server.on("connection", (socket) => {
@@ -40,10 +64,6 @@ describe("Redis Server", () => {
         expect(data.toString()).toBe("PING\r\n")
         done()
       })
-    })
-
-    client.connect(6379, "127.0.0.1", () => {
-      client.write("PING\r\n")
     })
   })
 
