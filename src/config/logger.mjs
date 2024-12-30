@@ -17,8 +17,8 @@ export const logger = (namespace) => {
   return {
     info: (...msg) => createPino.info(...msg),
     error: (...msg) => createPino.error(...msg),
-    warn: (...args) => createPino.warn(...args),
-    debug: (...args) => createPino.debug(...args),
+    warn: (...msg) => createPino.warn(...msg),
+    debug: (...msg) => createPino.debug(...msg),
   }
 }
 
