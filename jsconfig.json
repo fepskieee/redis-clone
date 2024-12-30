@@ -10,6 +10,6 @@
     "resolveJsonModule": true,
     "moduleResolution": "node"
   },
-  "include": ["**/tests/**/*.js", "**/src/**/*.js"],
-  "exclude": ["**/node_modules/**"]
+  "include": ["src/**/*.mjs", "/redis/**/*.mjs", "tests/*/*.mjs"],
+  "exclude": ["node_modules"]
 }
