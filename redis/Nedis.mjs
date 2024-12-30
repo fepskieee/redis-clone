@@ -54,31 +54,6 @@ class Nedis {
   lpush(args) {
     this.nediList.lpush(args)
   }
-  // mget = (...keys) => {
-  //   return keys.map((key, index) => {
-  //     let value = get(key)
-
-  //     console.log(`${index + 1}: ${value}`)
-
-  //     return value
-  //   })
-  // }
-
-  // incrby = (key, value) => {
-  //   const counter = parseInt(value) || 1
-
-  //   if (key in this.data) {
-  //     this.data[key] = parseInt(this.data[key]) + counter
-
-  //     return this.data[key]
-  //   }
-
-  //   return this.set(key, 0)
-  // }
-
-  // incr = (key) => {
-  //   this.incrby(key)
-  // }
 
   del(key) {
     if (!this.dataStore.has(key)) {

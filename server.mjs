@@ -1,5 +1,6 @@
 import net from "net"
 import { logger } from "./src/configs/logger.mjs"
+import { parseCommand } from "./src/controllers/nedisController.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
@@ -22,13 +23,12 @@ server.on("connection", (socket) => {
 
   setClient(clientInfo.id, clientInfo)
   serverLogger.info(`New client connected ${clientInfo.id}`)
+  socket.write("+Welcome to Nedis!")
 
   socket.on("data", (data) => {
-    const buffer = data.toString().trim()
-
-    const cmd = buffer.split("\r\n")
-    serverLogger.info(cmd)
-    socket.write(`+OK\r\n`)
+    const bufferData = data.toString().trim().split("\r\n")
+    const result = parseCommand(bufferData)
+    socket.write(result)
   })
 
   socket.on("end", () => {
@@ -39,7 +39,7 @@ server.on("connection", (socket) => {
     serverLogger.info(`Client disconnected ${clientInfo.id}`)
     deleteClient(clientInfo.id)
     const totalClient = getClientMap()
-    serverLogger.info(`Total client connected: ${totalClient.size}`)
+    serverLogger.info(`Total client currently connected: ${totalClient.size}`)
   })
 
   socket.on("error", (err) => {
