@@ -1,6 +1,6 @@
 import net from "net"
 import { logger, logWithLine } from "./src/config/logger.mjs"
-import { setClient, deleteClient } from "./src/config/clients.mjs"
+import { setClient, deleteClient, getClientMap } from "./src/config/clients.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
@@ -11,14 +11,7 @@ const namespace = getCurrentFilename(import.meta.url)
 const serverLogger = logger(namespace)
 
 server.on("connection", (socket) => {
-  const {
-    remoteAddress,
-    remotePort,
-    remoteFamily,
-    localAddress,
-    localPort,
-    localFamily,
-  } = socket
+  const { remoteAddress, remotePort, remoteFamily } = socket
 
   const clientInfo = {
     id: `${remoteAddress}:${remotePort}`,
@@ -27,33 +20,18 @@ server.on("connection", (socket) => {
     family: remoteFamily,
   }
 
-  const serverInfo = {
-    id: `${localAddress}:${localPort}`,
-    ip: localAddress,
-    port: localPort,
-    family: localFamily,
-  }
-
-  serverLogger.info(`New client connected ${clientInfo.id}`)
   setClient(clientInfo.id, clientInfo)
-  socket.write(`${serverInfo.id}> `)
+  const totalClient = getClientMap().size
+  serverLogger.info(`[${totalClient}] New client connected ${clientInfo.id}`)
 
   socket.on("data", (data) => {
     const buffer = data.toString()
 
-    const [cmd, args] = buffer.trim().split(" ")
-    logWithLine(cmd, args)
+    serverLogger.info(`${buffer}`)
 
-    let response = ""
-    switch (cmd.toUpperCase()) {
-      case "SET":
-        response = "OK\r\n"
-        break
-      default:
-        response = "ERR unknown command\r\n"
-    }
+    const [cmd] = buffer.trim().split(" ")
 
-    socket.write(`${serverInfo.id}> `)
+    socket.write("+PONG")
   })
 
   socket.on("end", () => {
@@ -63,6 +41,8 @@ server.on("connection", (socket) => {
   socket.on("close", () => {
     serverLogger.info(`Client disconnected ${clientInfo.id}`)
     deleteClient(clientInfo.id)
+    const totalClient = getClientMap().size
+    serverLogger.info(`Total client connected: ${totalClient}`)
   })
 
   socket.on("error", (err) => {
@@ -77,6 +57,6 @@ server.on("error", (err) => {
   serverLogger.error(err, err.message)
 })
 
-server.listen(port, host, () =>
+server.listen(port, host, () => {
   serverLogger.info(`Nedis server is listening on ${host}:${port}`)
-)
+})
