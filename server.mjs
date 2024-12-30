@@ -21,8 +21,10 @@ server.on("connection", (socket) => {
   }
 
   setClient(clientInfo.id, clientInfo)
-  const totalClient = getClientMap().size
-  serverLogger.info(`[${totalClient}] New client connected ${clientInfo.id}`)
+  const totalClient = getClientMap
+  serverLogger.info(
+    `[${totalClient.size}] New client connected ${clientInfo.id}`
+  )
 
   socket.on("data", (data) => {
     const buffer = data.toString()
