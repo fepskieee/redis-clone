@@ -1,6 +1,6 @@
 import net from "net"
-import { logger, logWithLine } from "./src/config/logger.mjs"
-import { setClient, deleteClient, getClientMap } from "./src/config/clients.mjs"
+import { logger } from "./src/configs/logger.mjs"
+import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
@@ -24,7 +24,7 @@ server.on("connection", (socket) => {
   serverLogger.info(`New client connected ${clientInfo.id}`)
 
   socket.on("data", (data) => {
-    const buffer = data.toString()
+    const buffer = data.toString().trim()
 
     const cmd = buffer.split("\r\n")
     serverLogger.info(cmd)
@@ -38,8 +38,8 @@ server.on("connection", (socket) => {
   socket.on("close", () => {
     serverLogger.info(`Client disconnected ${clientInfo.id}`)
     deleteClient(clientInfo.id)
-    const totalClient = getClientMap().size
-    serverLogger.info(`Total client connected: ${totalClient}`)
+    const totalClient = getClientMap()
+    serverLogger.info(`Total client connected: ${totalClient.size}`)
   })
 
   socket.on("error", (err) => {
