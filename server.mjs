@@ -1,4 +1,6 @@
 import net from "net"
+import { lookUpCommand } from "./src/models/command-lookup.mjs"
+
 import { logger } from "./src/configs/logger.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { nedis } from "./src/services/nedis.mjs"
@@ -28,9 +30,10 @@ server.on("connection", (socket) => {
   serverLogger.info(`Total client currently connected: ${totalClient.size}`)
 
   socket.on("data", (data) => {
-    const bufferData = data.toString()
-    const result = nedis.parseCommand(bufferData)
-    socket.write(result)
+    const { command, args } = nedis.parseCommand(data)
+    const lookupResult = lookUpCommand(command)
+
+    socket.write("+OK\r\n")
   })
 
   socket.on("end", () => {
