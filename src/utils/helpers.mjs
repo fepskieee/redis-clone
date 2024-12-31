@@ -14,3 +14,7 @@ export const getIPv4 = (address) => {
     ? address.slice(7)
     : address
 }
+
+export const isEmptyObject = (obj) => {
+  return Object.entries(obj).length === 0 && obj.constructor === Object
+}
