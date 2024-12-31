@@ -23,11 +23,13 @@ server.on("connection", (socket) => {
 
   setClient(clientInfo.id, clientInfo)
   serverLogger.info(`New client connected ${clientInfo.id}`)
-  socket.write("+Welcome to Nedis!")
+
+  const totalClient = getClientMap()
+  serverLogger.info(`Total client currently connected: ${totalClient.size}`)
 
   socket.on("data", (data) => {
     const bufferData = data.toString().trim().split("\r\n")
-    const result = parseCommand(bufferData)
+    const result = "+OK\r\n" || parseCommand(bufferData)
     socket.write(result)
   })
 
@@ -38,15 +40,21 @@ server.on("connection", (socket) => {
   socket.on("close", () => {
     serverLogger.info(`Client disconnected ${clientInfo.id}`)
     deleteClient(clientInfo.id)
+
     const totalClient = getClientMap()
     serverLogger.info(`Total client currently connected: ${totalClient.size}`)
   })
 
   socket.on("error", (err) => {
-    serverLogger.error(
-      err,
-      `Client disconnected ${clientInfo.id} (${err.code})`
-    )
+    switch (err.code) {
+      case "ECONNRESET":
+        serverLogger.error(`An error occured on client side (${err.code})`)
+        break
+
+      default:
+        serverLogger.error(err)
+        break
+    }
   })
 })
 
