@@ -1,300 +1,244 @@
 {
-  "strings": [
-    {
-      "name": "SET",
+  "strings": {
+    "SET": {
       "description": "Sets the value of a key",
       "args": ["key", "value"]
     },
-    {
-      "name": "SETNX",
+    "SETNX": {
       "description": "Sets the value of a key only if it does not already exist",
       "args": ["key", "value"]
     },
-    {
-      "name": "GET",
+    "GET": {
       "description": "Gets the value of a key",
       "args": ["key"]
     },
-    {
-      "name": "MGET",
+    "MGET": {
       "description": "Gets the values of multiple keys",
       "args": ["key1", "key2"]
     },
-    {
-      "name": "INCR",
+    "INCR": {
       "description": "Increments the integer value of a key",
       "args": ["key"]
     },
-    {
-      "name": "INCRBY",
+    "INCRBY": {
       "description": "Increments the integer value of a key by a given amount",
       "args": ["key", "increment"]
     },
-    {
-      "name": "INCRBYFLOAT",
+    "INCRBYFLOAT": {
       "description": "Increments the float value of a key by a given amount",
       "args": ["key", "increment"]
     },
-    {
-      "name": "APPEND",
+    "APPEND": {
       "description": "Appends a value to a key",
       "args": ["key", "value"]
     },
-    {
-      "name": "STRLEN",
+    "STRLEN": {
       "description": "Gets the length of the value stored in a key",
       "args": ["key"]
     }
-  ],
-  "lists": [
-    {
-      "name": "LPUSH",
+  },
+  "lists": {
+    "LPUSH": {
       "description": "Prepend one or more values to a list",
       "args": ["list", "value1", "value2"]
     },
-    {
-      "name": "RPUSH",
+    "RPUSH": {
       "description": "Append one or more values to a list",
       "args": ["list", "value1", "value2"]
     },
-    {
-      "name": "LPOP",
+    "LPOP": {
       "description": "Removes and returns the first element of a list",
       "args": ["list"]
     },
-    {
-      "name": "RPOP",
+    "RPOP": {
       "description": "Removes and returns the last element of a list",
       "args": ["list"]
     },
-    {
-      "name": "LRANGE",
+    "LRANGE": {
       "description": "Gets a range of elements from a list",
       "args": ["list", "start", "stop"]
     },
-    {
-      "name": "LLEN",
+    "LLEN": {
       "description": "Gets the length of a list",
       "args": ["list"]
     },
-    {
-      "name": "LINSERT",
+    "LINSERT": {
       "description": "Inserts an element before or after another element in a list",
       "args": ["list", "before/after", "pivot", "value"]
     },
-    {
-      "name": "LREM",
+    "LREM": {
       "description": "Removes elements from a list",
       "args": ["list", "count", "value"]
     }
-  ],
-  "sets": [
-    {
-      "name": "SADD",
+  },
+  "sets": {
+    "SADD": {
       "description": "Adds one or more members to a set",
       "args": ["set", "member1", "member2"]
     },
-    {
-      "name": "SREM",
+    "SREM": {
       "description": "Removes one or more members from a set",
       "args": ["set", "member1", "member2"]
     },
-    {
-      "name": "SMEMBERS",
+    "SMEMBERS": {
       "description": "Gets all the members in a set",
       "args": ["set"]
     },
-    {
-      "name": "SISMEMBER",
+    "SISMEMBER": {
       "description": "Checks if a member exists in a set",
       "args": ["set", "member"]
     },
-    {
-      "name": "SINTER",
+    "SINTER": {
       "description": "Returns the intersection of multiple sets",
       "args": ["set1", "set2"]
     },
-    {
-      "name": "SUNION",
+    "SUNION": {
       "description": "Returns the union of multiple sets",
       "args": ["set1", "set2"]
     },
-    {
-      "name": "SDIFF",
+    "SDIFF": {
       "description": "Returns the difference between multiple sets",
       "args": ["set1", "set2"]
     },
-    {
-      "name": "SMOVE",
+    "SMOVE": {
       "description": "Moves a member from one set to another",
       "args": ["source", "destination", "member"]
     },
-    {
-      "name": "SCARD",
+    "SCARD": {
       "description": "Gets the number of members in a set",
       "args": ["set"]
     }
-  ],
-  "hashes": [
-    {
-      "name": "HSET",
+  },
+  "hashes": {
+    "HSET": {
       "description": "Sets the value of a field in a hash",
       "args": ["hash", "field", "value"]
     },
-    {
-      "name": "HGET",
+    "HGET": {
       "description": "Gets the value of a field in a hash",
       "args": ["hash", "field"]
     },
-    {
-      "name": "HGETALL",
+    "HGETALL": {
       "description": "Gets all fields and values in a hash",
       "args": ["hash"]
     },
-    {
-      "name": "HDEL",
+    "HDEL": {
       "description": "Deletes one or more fields from a hash",
       "args": ["hash", "field1", "field2"]
     },
-    {
-      "name": "HINCRBY",
+    "HINCRBY": {
       "description": "Increments the integer value of a field in a hash",
       "args": ["hash", "field", "increment"]
     },
-    {
-      "name": "HINCRBYFLOAT",
+    "HINCRBYFLOAT": {
       "description": "Increments the float value of a field in a hash",
       "args": ["hash", "field", "increment"]
     },
-    {
-      "name": "HKEYS",
+    "HKEYS": {
       "description": "Gets all the fields in a hash",
       "args": ["hash"]
     },
-    {
-      "name": "HVALS",
+    "HVALS": {
       "description": "Gets all the values in a hash",
       "args": ["hash"]
     }
-  ],
-  "sortedSets": [
-    {
-      "name": "ZADD",
+  },
+  "sortedSets": {
+    "ZADD": {
       "description": "Adds one or more members to a sorted set, or updates their score",
       "args": ["zset", "score", "member"]
     },
-    {
-      "name": "ZRANGE",
+    "ZRANGE": {
       "description": "Gets a range of members in a sorted set",
       "args": ["zset", "start", "stop"]
     },
-    {
-      "name": "ZREVRANGE",
+    "ZREVRANGE": {
       "description": "Gets a range of members in a sorted set, ordered from highest to lowest score",
       "args": ["zset", "start", "stop"]
     },
-    {
-      "name": "ZREM",
+    "ZREM": {
       "description": "Removes one or more members from a sorted set",
       "args": ["zset", "member1", "member2"]
     },
-    {
-      "name": "ZRANK",
+    "ZRANK": {
       "description": "Gets the rank of a member in a sorted set",
       "args": ["zset", "member"]
     },
-    {
-      "name": "ZSCORE",
+    "ZSCORE": {
       "description": "Gets the score of a member in a sorted set",
       "args": ["zset", "member"]
     },
-    {
-      "name": "ZINCRBY",
+    "ZINCRBY": {
       "description": "Increments the score of a member in a sorted set",
       "args": ["zset", "increment", "member"]
     },
-    {
-      "name": "ZCARD",
+    "ZCARD": {
       "description": "Gets the number of members in a sorted set",
       "args": ["zset"]
     }
-  ],
-  "hyperloglogs": [
-    {
-      "name": "PFADD",
+  },
+  "hyperloglogs": {
+    "PFADD": {
       "description": "Adds elements to a HyperLogLog",
       "args": ["hyperloglog", "element1", "element2"]
     },
-    {
-      "name": "PFCOUNT",
+    "PFCOUNT": {
       "description": "Returns the approximated cardinality of elements in a HyperLogLog",
       "args": ["hyperloglog"]
     }
-  ],
-  "transactions": [
-    {
-      "name": "MULTI",
+  },
+  "transactions": {
+    "MULTI": {
       "description": "Marks the start of a transaction block",
       "args": []
     },
-    {
-      "name": "EXEC",
+    "EXEC": {
       "description": "Executes all commands issued after MULTI",
       "args": []
     },
-    {
-      "name": "DISCARD",
+    "DISCARD": {
       "description": "Discard all commands issued after MULTI",
       "args": []
     },
-    {
-      "name": "WATCH",
+    "WATCH": {
       "description": "Watch one or more keys for modifications",
       "args": ["key1", "key2"]
     }
-  ],
-  "pubsub": [
-    {
-      "name": "PUBLISH",
+  },
+  "pubsub": {
+    "PUBLISH": {
       "description": "Posts a message to a channel",
       "args": ["channel", "message"]
     },
-    {
-      "name": "SUBSCRIBE",
+    "SUBSCRIBE": {
       "description": "Subscribes to one or more channels",
       "args": ["channel1", "channel2"]
     },
-    {
-      "name": "UNSUBSCRIBE",
+    "UNSUBSCRIBE": {
       "description": "Unsubscribes from one or more channels",
       "args": ["channel1", "channel2"]
     }
-  ],
-  "keyspace": [
-    {
-      "name": "DEL",
+  },
+  "keyspace": {
+    "DEL": {
       "description": "Deletes one or more keys",
       "args": ["key1", "key2"]
     },
-    {
-      "name": "EXPIRE",
+    "EXPIRE": {
       "description": "Sets an expiration time for a key",
       "args": ["key", "seconds"]
     },
-    {
-      "name": "TTL",
+    "TTL": {
       "description": "Gets the time to live of a key",
       "args": ["key"]
     },
-    {
-      "name": "PERSIST",
+    "PERSIST": {
       "description": "Removes the expiration time from a key",
       "args": ["key"]
     },
-    {
-      "name": "RENAME",
+    "RENAME": {
       "description": "Renames a key",
       "args": ["oldkey", "newkey"]
     }
-  ]
+  }
 }
