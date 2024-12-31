@@ -4,15 +4,19 @@ import { getCurrentFilename } from "../utils/helpers.mjs"
 const namespace = getCurrentFilename(import.meta.url)
 const nedisLogger = logger(namespace)
 
-const executeCommand = (cmd) => {
+const executeCommand = (keys, args) => {
   console.log("execute")
 }
 
 const parseCommand = (bufferData) => {
-  const cmd = bufferData[2].toUpperCase()
-  nedisLogger.info(cmd)
+  const formattedData = bufferData.split("\r\n").filter((line) => !!line)
 
-  return `+OK\r\n`
+  const command = formattedData[2].toUpperCase()
+  const args = formattedData.slice(4).filter((_, index) => index % 2 === 0)
+
+  nedisLogger.info(`RECEIVE: ${command} ${args.join(" ")}`)
+
+  return { command, args }
 }
 
-export { parseCommand }
+export const nedis = { parseCommand, executeCommand }
