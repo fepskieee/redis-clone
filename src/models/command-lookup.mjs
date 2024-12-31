@@ -6,6 +6,7 @@ export const lookUpCommand = (command) => {
       return {
         category,
         command,
+        ...commands[category][command]
       }
     }
   }
