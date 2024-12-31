@@ -6,6 +6,8 @@ const nedisLogger = logger(namespace)
 
 const executeCommand = (command, args, category) => {
   console.log("execute")
+
+  return "+OK\r\n"
 }
 
 const parseCommand = (data) => {

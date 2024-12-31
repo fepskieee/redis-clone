@@ -1,10 +1,9 @@
 import net from "net"
+import { logger, logWithLine } from "./src/configs/logger.mjs"
 import { lookUpCommand } from "./src/models/command-lookup.mjs"
-
-import { logger } from "./src/configs/logger.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { nedis } from "./src/services/nedis.mjs"
-import { getCurrentFilename } from "./src/utils/helpers.mjs"
+import { getCurrentFilename, isEmptyObject } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
 const host = process.env.HOST || "127.0.0.1"
@@ -29,11 +28,21 @@ server.on("connection", (socket) => {
   const totalClient = getClientMap()
   serverLogger.info(`Total client currently connected: ${totalClient.size}`)
 
+  let response
+
   socket.on("data", (data) => {
     const { command, args } = nedis.parseCommand(data)
-    const lookupResult = lookUpCommand(command)
+    const { category } = lookUpCommand(command)
 
-    socket.write("+OK\r\n")
+    serverLogger.info(`RECEIVE: ${command} ${args.join(" ")}`)
+
+    if (category) {
+      response = nedis.executeCommand(command, args, category)
+    } else {
+      response = `-ERR unknown command '${command}'\r\n`
+    }
+
+    socket.write(response)
   })
 
   socket.on("end", () => {
