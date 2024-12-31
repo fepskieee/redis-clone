@@ -1,7 +1,7 @@
 import net from "net"
 import { logger } from "./src/configs/logger.mjs"
-import { parseCommand } from "./src/services/nedis.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
+import { nedis } from "./src/services/nedis.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
@@ -28,8 +28,8 @@ server.on("connection", (socket) => {
   serverLogger.info(`Total client currently connected: ${totalClient.size}`)
 
   socket.on("data", (data) => {
-    const bufferData = data.toString().trim().split("\r\n")
-    const result = parseCommand(bufferData)
+    const bufferData = data.toString()
+    const result = nedis.parseCommand(bufferData)
     socket.write(result)
   })
 
