@@ -10,5 +10,5 @@ export const lookUpCommand = (command) => {
     }
   }
 
-  return {}
+  return null
 }
