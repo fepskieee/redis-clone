@@ -29,7 +29,7 @@ server.on("connection", (socket) => {
 
   socket.on("data", (data) => {
     const bufferData = data.toString().trim().split("\r\n")
-    const result = "+OK\r\n" || parseCommand(bufferData)
+    const result = parseCommand(bufferData)
     socket.write(result)
   })
 
