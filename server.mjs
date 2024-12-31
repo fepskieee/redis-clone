@@ -1,6 +1,6 @@
 import net from "net"
 import { logger } from "./src/configs/logger.mjs"
-import { parseCommand } from "./src/controllers/nedisController.mjs"
+import { parseCommand } from "./src/services/nedis.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
