@@ -31,15 +31,17 @@ server.on("connection", (socket) => {
   let response
 
   socket.on("data", (data) => {
-    const { command, args } = nedis.parseCommand(data)
-    const { category } = lookUpCommand(command)
+    const parseData = nedis.parseCommand(data)
+    const { category } = lookUpCommand(parseData.command)
 
-    serverLogger.info(`RECEIVE: ${command} ${args.join(" ")}`)
+    serverLogger.info(
+      `RECEIVE: ${parseData.command} ${parseData.args.join(" ")}`
+    )
 
     if (category) {
-      response = nedis.executeCommand(command, args, category)
+      response = nedis.executeCommand(parseData, category)
     } else {
-      response = `-ERR unknown command '${command}'\r\n`
+      response = `-ERR unknown command '${parseData.command}'\r\n`
     }
 
     socket.write(response)

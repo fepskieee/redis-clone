@@ -1,28 +1,36 @@
 const storeMap = new Map()
 
-export const get = (key) => {
-  return storeMap.has(key) ? storeMap.get(key) : 0
+const get = (key) => {
+  return storeMap.get(key)
 }
 
-export const set = (key, values) => {
-  return storeMap.set(key, values)
+const set = (key, value) => {
+  return storeMap.set(key, value)
 }
 
-export const del = (key) => {
-  if (!storeMap.has(key)) return 0
-
-  storeMap.delete(key)
-  return 1
+const del = (key) => {
+  return storeMap.delete(key)
 }
 
-export const exists = (key) => {
-  return storeMap.has(key) ? 1 : 0
+const has = (key) => {
+  return storeMap.has(key)
 }
 
-export const keys = () => {
+const keys = () => {
   return structuredClone(storeMap)
 }
 
-export const flushall = () => {
+const flushall = () => {
   storeMap.clear()
 }
+
+const store = {
+  get,
+  set,
+  del,
+  has,
+  keys,
+  flushall,
+}
+
+export default store
