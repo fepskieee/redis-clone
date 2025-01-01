@@ -16,6 +16,8 @@ class Strings {
     "-ERR Wrong number of arguments for 'SET' command\r\n"
   static ERR_MSG_MGET_WRONG_NUMBER_ARGS =
     "-ERR Wrong number of arguments for 'MGET' command\r\n"
+  static ERR_MSG_INCR_VALUE_NOT_VALID =
+    "-ERR value is not an integer or out of range\r\n"
   static ERR_MSG_WRONG_TYPE_OEPRATION =
     "-WRONGTYPE Operation against a key holding string value\r\n"
   static ERR_MSG_KEY_EXISTS = "-ERR Key already exists\r\n"
@@ -131,6 +133,45 @@ class Strings {
       .reduce((acc, curr) => acc + `${curr}`, `*${keys.length}\r\n`)
 
     return result
+  }
+
+  static INCR([key], category) {
+    if (!store.has(key)) {
+      store.set(key, { type: category, value: "0" })
+    }
+
+    if (store.get(key).type !== category) {
+      stringsLogger.error(Strings.ERR_MSG_WRONG_TYPE_OEPRATION)
+      return Strings.ERR_MSG_WRONG_TYPE_OEPRATION
+    }
+
+    let value = parseInt(store.get(key).value)
+
+    if (!Number.isInteger(value)) {
+      stringsLogger.error(Strings.ERR_MSG_INCR_VALUE_NOT_VALID)
+      return Strings.ERR_MSG_INCR_VALUE_NOT_VALID
+    }
+
+    value = value + 1
+    store.set(key, { ...store.get(key), value: value.toString() })
+
+    return `:${value}\r\n`
+  }
+
+  static INCRBY([key, increment]) {
+    if (!store.has(key)) {
+      store.set(key, { type: "string", value: "0" })
+    }
+
+    if (store.get(key).type !== "string") {
+      stringsLogger.error(Strings.ERR_MSG_WRONG_TYPE_OEPRATION)
+      return Strings.ERR_MSG_WRONG_TYPE_OEPRATION
+    }
+
+    const value = parseInt(store.get(key).value) + parseInt(increment)
+    store.set(key, { type: "string", value: value.toString() })
+
+    return `:${value}\r\n`
   }
 }
 
