@@ -23,11 +23,18 @@ class Strings {
   static ERR_MSG_EXCEED_512MB = "-ERR Exceeds memory limit of 512MB\r\n"
 
   static GET([key], category) {
-    if (!key) return Strings.ERR_MSG_GET_WRONG_NUMBER_ARGS
+    if (!key) {
+      stringsLogger.error(Strings.ERR_MSG_GET_WRONG_NUMBER_ARGS)
+      return Strings.ERR_MSG_GET_WRONG_NUMBER_ARGS
+    }
 
-    if (!store.has(key)) return Strings.MSG_EMPTY
+    if (!store.has(key)) {
+      stringsLogger.error(Strings.MSG_EMPTY)
+      return Strings.MSG_EMPTY
+    }
 
     if (store.get(key).type !== category) {
+      stringsLogger.error(Strings.ERR_MSG_WRONG_TYPE_OEPRATION)
       return Strings.ERR_MSG_WRONG_TYPE_OEPRATION
     }
 
@@ -38,15 +45,18 @@ class Strings {
 
   static SET([key, value, time], category) {
     if (!key || !value) {
+      stringsLogger.error(Strings.ERR_MSG_SET_WRONG_NUMBER_ARGS)
       return Strings.ERR_MSG_SET_WRONG_NUMBER_ARGS
     }
 
     if (typeof value !== "string") {
+      stringsLogger.error(Strings.ERR_MSG_NOT_STRING)
       return Strings.ERR_MSG_NOT_STRING
     }
     const byteLength = Buffer.byteLength(value, "utf8")
 
     if (byteLength > Strings.MAX_MEMORY) {
+      stringsLogger.error(Strings.ERR_MSG_EXCEED_512MB)
       return Strings.ERR_MSG_EXCEED_512MB
     }
 
@@ -96,6 +106,7 @@ class Strings {
 
   static SETNX([key, value], category) {
     if (store.has(key)) {
+      stringsLogger.error(Strings.ERR_MSG_KEY_EXISTS)
       return Strings.ERR_MSG_KEY_EXISTS
     }
 
@@ -118,8 +129,6 @@ class Strings {
         return `$${result.length}\r\n${result}\r\n`
       })
       .reduce((acc, curr) => acc + `${curr}`, `*${keys.length}\r\n`)
-
-    console.table(result)
 
     return result
   }
