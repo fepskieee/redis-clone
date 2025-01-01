@@ -175,7 +175,7 @@ class Strings {
 
     let value = Number(store.get(key).value)
 
-    if (!Number.isInteger(value)) {
+    if (Number.isInteger(value) && !/\s/.test(value)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
@@ -230,7 +230,9 @@ class Strings {
       return Strings.ERR_MSG_INCRBY_WRONG_NUMBER_ARGS
     }
 
-    if (!Number.isInteger(Number(increment))) {
+    const incrementFloat = parseFloat(increment)
+
+    if (!Number.isNaN(Number(increment))) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
