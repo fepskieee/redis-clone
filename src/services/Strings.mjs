@@ -1,5 +1,10 @@
+import { logger } from "../configs/logger.mjs"
 import store from "../models/store.mjs"
 import timer from "../models/timer.mjs"
+import { getCurrentFilename } from "../utils/helpers.mjs"
+
+const namespace = getCurrentFilename(import.meta.url)
+const stringsLogger = logger(namespace)
 
 class Strings {
   static MAX_MEMORY = 512 * 1024 * 1024
@@ -9,10 +14,12 @@ class Strings {
     "-ERR Wrong number of arguments for 'GET' command\r\n"
   static ERR_MSG_SET_WRONG_NUMBER_ARGS =
     "-ERR Wrong number of arguments for 'SET' command\r\n"
+  static ERR_MSG_MGET_WRONG_NUMBER_ARGS =
+    "-ERR Wrong number of arguments for 'MGET' command\r\n"
   static ERR_MSG_WRONG_TYPE_OEPRATION =
     "-ERR WRONG type operation for keys with non-string values\r\n"
   static ERR_MSG_KEY_EXISTS = "-ERR Key already exists\r\n"
-  static ERR_MSG_NOT_STRING = "-ERR value is not a string\r\n"
+  static ERR_MSG_NOT_STRING = "-ERR Value is not a string\r\n"
   static ERR_MSG_EXCEED_512MB = "-ERR Exceeds memory limit of 512MB\r\n"
 
   static GET([key], category) {
@@ -85,23 +92,30 @@ class Strings {
     return Strings.MSG_SUCCESS
   }
 
-  del(key) {
-    if (!this.storeMap.has(key)) return 0
+  static SETNX([key, value], category) {
+    if (store.has(key)) {
+      return Strings.ERR_MSG_KEY_EXISTS
+    }
 
-    this.storeMap.delete(key)
-    return 1
+    return Strings.SET([key, value], category)
   }
 
-  exists(key) {
-    return this.storeMap.has(key) ? 1 : 0
-  }
+  static MGET(keys, category) {
+    if (!keys || keys.length < 1) {
+      stringsLogger.error(Strings.ERR_MSG_MGET_WRONG_NUMBER_ARGS)
+      return `${Strings.ERR_MSG_MGET_WRONG_NUMBER_ARGS}`
+    }
 
-  keys() {
-    return structuredClone(this.storeMap)
-  }
+    const result = keys.map((key) => {
+      if (!store.has(key)) return "(nil)"
+      if (store.get(key).type !== category) return "(nil)"
+      return store.get(key).value
+    })
 
-  flushall() {
-    this.storeMap.clear()
+    console.table(result)
+
+    stringsLogger.info(Strings.MSG_SUCCESS)
+    return Strings.MSG_SUCCESS
   }
 }
 
