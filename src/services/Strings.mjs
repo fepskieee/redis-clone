@@ -19,8 +19,12 @@ class Strings {
     "-ERR Wrong number of arguments for 'MGET' command\r\n"
   static ERR_MSG_VALUE_NOT_INTEGER =
     "-ERR value is not an integer or out of range\r\n"
+  static ERR_MSG_INCR_WRONG_NUMBER_ARGS =
+    "-ERR Wrong number of arguments for 'INCR' command\r\n"
   static ERR_MSG_INCRBY_WRONG_NUMBER_ARGS =
     "-ERR Wrong number of arguments for 'INCRBY' command\r\n"
+  static ERR_MSG_INCRBYFLOAT_WRONG_NUMBER_ARGS =
+    "-ERR Wrong number of arguments for 'INCRBYFLOAT' command\r\n"
   static WRONGTYPE_MSG_OEPRATION =
     "-WRONGTYPE Operation against a key holding string value\r\n"
   static ERR_MSG_KEY_EXISTS = "-ERR Key already exists\r\n"
@@ -160,8 +164,8 @@ class Strings {
     }
 
     if (!key) {
-      stringsLogger.error(Strings.ERR_MSG_GET_WRONG_NUMBER_ARGS)
-      return Strings.ERR_MSG_GET_WRONG_NUMBER_ARGS
+      stringsLogger.error(Strings.ERR_MSG_INCR_WRONG_NUMBER_ARGS)
+      return Strings.ERR_MSG_INCR_WRONG_NUMBER_ARGS
     }
 
     if (!store.has(key)) {
@@ -173,14 +177,14 @@ class Strings {
       return Strings.WRONGTYPE_MSG_OEPRATION
     }
 
-    let value = Number(store.get(key).value)
+    let value = store.get(key).value
 
-    if (Number.isInteger(value) && !/\s/.test(value)) {
+    if (!Number.isInteger(Number(value)) || /\s/.test(value)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
 
-    value = value + 1
+    value = parseInt(value) + 1
     store.set(key, { ...store.get(key), value: value.toString() })
 
     return `:${value}\r\n`
@@ -197,7 +201,7 @@ class Strings {
       return Strings.ERR_MSG_INCRBY_WRONG_NUMBER_ARGS
     }
 
-    if (!Number.isInteger(Number(increment))) {
+    if (!Number.isInteger(Number(increment)) || /\s/g.test(increment)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
@@ -206,9 +210,9 @@ class Strings {
       store.set(key, { type: category, value: "0" })
     }
 
-    let value = parseInt(store.get(key).value)
+    let value = store.get(key).value
 
-    if (!Number.isInteger(value)) {
+    if (!Number.isInteger(Number(value)) || /\s/g.test(value)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
@@ -230,9 +234,7 @@ class Strings {
       return Strings.ERR_MSG_INCRBY_WRONG_NUMBER_ARGS
     }
 
-    const incrementFloat = parseFloat(increment)
-
-    if (!Number.isNaN(Number(increment))) {
+    if (Number.isNaN(parseFloat(increment)) || /\s/g.test(increment)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
@@ -241,17 +243,20 @@ class Strings {
       store.set(key, { type: category, value: "0" })
     }
 
-    let value = parseFloat(store.get(key).value)
+    let value = store.get(key).value
 
-    if (!Number.isInteger(value)) {
+    if (Number.isNaN(parseFloat(value)) || /\s/g.test(value)) {
       stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
       return Strings.ERR_MSG_VALUE_NOT_INTEGER
     }
 
     value = parseFloat(value) + parseFloat(increment)
-    store.set(key, { ...store.get(key), value: value.toString() })
 
-    return `:${value}\r\n`
+    const result = value.toString()
+
+    store.set(key, { ...store.get(key), value: result })
+
+    return `$${result.length}\r\n${result}\r\n`
   }
 }
 
