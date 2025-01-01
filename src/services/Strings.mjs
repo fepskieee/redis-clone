@@ -53,7 +53,12 @@ class Strings {
     return `$${result.length}\r\n${result}\r\n`
   }
 
-  static SET([key, value, time], category) {
+  static SET([key, value, option, time], category) {
+    if (arguments[0].length % 2 !== 0) {
+      stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
+      return Strings.ERR_MSG_SYNTAX_ERROR
+    }
+
     if (!key || !value) {
       stringsLogger.error(Strings.ERR_MSG_SET_WRONG_NUMBER_ARGS)
       return Strings.ERR_MSG_SET_WRONG_NUMBER_ARGS
@@ -209,6 +214,39 @@ class Strings {
     }
 
     value = parseInt(value) + parseInt(increment)
+    store.set(key, { ...store.get(key), value: value.toString() })
+
+    return `:${value}\r\n`
+  }
+
+  static INCRBYFLOAT([key, increment], category) {
+    if (arguments[0].length > 2) {
+      stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
+      return Strings.ERR_MSG_SYNTAX_ERROR
+    }
+
+    if (!key || !increment) {
+      stringsLogger.error(Strings.ERR_MSG_INCRBY_WRONG_NUMBER_ARGS)
+      return Strings.ERR_MSG_INCRBY_WRONG_NUMBER_ARGS
+    }
+
+    if (!Number.isInteger(Number(increment))) {
+      stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
+      return Strings.ERR_MSG_VALUE_NOT_INTEGER
+    }
+
+    if (!store.has(key)) {
+      store.set(key, { type: category, value: "0" })
+    }
+
+    let value = parseFloat(store.get(key).value)
+
+    if (!Number.isInteger(value)) {
+      stringsLogger.error(Strings.ERR_MSG_VALUE_NOT_INTEGER)
+      return Strings.ERR_MSG_VALUE_NOT_INTEGER
+    }
+
+    value = parseFloat(value) + parseFloat(increment)
     store.set(key, { ...store.get(key), value: value.toString() })
 
     return `:${value}\r\n`
