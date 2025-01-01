@@ -9,7 +9,7 @@ const stringsLogger = logger(namespace)
 class Strings {
   static MAX_MEMORY = 512 * 1024 * 1024
   static MSG_SUCCESS = "+OK\r\n"
-  static MSG_EMPTY = "+(nil)\r\n"
+  static MSG_EMPTY = "$-1\r\n"
   static ERR_MSG_GET_WRONG_NUMBER_ARGS =
     "-ERR Wrong number of arguments for 'GET' command\r\n"
   static ERR_MSG_SET_WRONG_NUMBER_ARGS =
@@ -17,7 +17,7 @@ class Strings {
   static ERR_MSG_MGET_WRONG_NUMBER_ARGS =
     "-ERR Wrong number of arguments for 'MGET' command\r\n"
   static ERR_MSG_WRONG_TYPE_OEPRATION =
-    "-ERR WRONG type operation for keys with non-string values\r\n"
+    "-WRONGTYPE Operation against a key holding string value\r\n"
   static ERR_MSG_KEY_EXISTS = "-ERR Key already exists\r\n"
   static ERR_MSG_NOT_STRING = "-ERR Value is not a string\r\n"
   static ERR_MSG_EXCEED_512MB = "-ERR Exceeds memory limit of 512MB\r\n"
@@ -31,7 +31,9 @@ class Strings {
       return Strings.ERR_MSG_WRONG_TYPE_OEPRATION
     }
 
-    return `+${store.get(key).value}\r\n`
+    const result = store.get(key).value
+
+    return `$${result.length}\r\n${result}\r\n`
   }
 
   static SET([key, value, time], category) {
@@ -106,16 +108,20 @@ class Strings {
       return `${Strings.ERR_MSG_MGET_WRONG_NUMBER_ARGS}`
     }
 
-    const result = keys.map((key) => {
-      if (!store.has(key)) return "(nil)"
-      if (store.get(key).type !== category) return "(nil)"
-      return store.get(key).value
-    })
+    const result = keys
+      .map((key) => {
+        if (!store.has(key)) return Strings.MSG_EMPTY
+        if (store.get(key).type !== category) return Strings.MSG_EMPTY
+
+        const result = store.get(key).value
+
+        return `$${result.length}\r\n${result}\r\n`
+      })
+      .reduce((acc, curr) => acc + `${curr}`, `*${keys.length}\r\n`)
 
     console.table(result)
 
-    stringsLogger.info(Strings.MSG_SUCCESS)
-    return Strings.MSG_SUCCESS
+    return result
   }
 }
 
