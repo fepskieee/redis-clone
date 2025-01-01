@@ -16,7 +16,7 @@ const has = (key) => {
   return storeMap.has(key)
 }
 
-const keys = () => {
+const getStoreMap = () => {
   return structuredClone(storeMap)
 }
 
@@ -29,7 +29,7 @@ const store = {
   set,
   del,
   has,
-  keys,
+  getStoreMap,
   flushall,
 }
 
