@@ -1,7 +1,7 @@
-import config from "../configs/config.json" with { type: "json" }
 import { logger, logWithLine } from "../configs/logger.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
 import Strings from "./Strings.mjs"
+import Lists from "./Lists.mjs"
 import PersistenceManager from "./persistence/PersistenceManager.mjs"
 
 const namespace = getCurrentFilename(import.meta.url)
@@ -10,20 +10,28 @@ const nedisLogger = logger(namespace)
 const persistence = new PersistenceManager()
 
 const commandCategories = {
-  strings: (command, args, category) => Strings[command](args, category),
-  lists: (command, args, category) => Strings[command](args, category),
-  sets: (command, args, category) => Strings[command](args, category),
-  hashes: (command, args, category) => Strings[command](args, category),
-  sortedSets: (command, args, category) => Strings[command](args, category),
-  hyperloglogs: (command, args, category) => Strings[command](args, category),
-  transactions: (command, args, category) => Strings[command](args, category),
-  pubsub: (command, args, category) => Strings[command](args, category),
-  keyspace: (command, args, category) => Strings[command](args, category),
+  strings: Strings,
+  lists: Lists,
+  // sets: Sets,
+  // hashes: Hash,
+  // sortedSets: SortedSet,
+  // hyperloglogs: Hyperlog,
+  // transactions: Transactions,
+  // pubsub: PubSub,
+  // keyspace: Keyspace,
 }
 
-const executeCommand = ({ command, args }, category) => {
-  const response = commandCategories[category](command, args, category)
-  persistence.logCommand(command, args)
+const executeCommand = (data) => {
+  const { parseData, type, socket } = data
+  const { command, args } = parseData
+
+  const category = commandCategories[type]
+  const response = category[command](args, type, socket)
+
+  if (response.charAt(0) !== "-") {
+    nedisLogger.info(`Received: ${command} ${args.join(" ")}`)
+    persistence.logCommand({ command, args })
+  }
 
   return response
 }
@@ -42,8 +50,9 @@ const parseCommand = (data) => {
 }
 
 const initialize = () => {
-  nedisLogger.info("Persistence mode: in-memory")
+  nedisLogger.info(`Initializing Nedis...`)
 
+  nedisLogger.info("Persistence mode: in-memory")
   // if (config.snapshot === "aof") {
   //   nedisLogger.info("Persistence mode: append-only-file")
   // } else if (config.snapshot === "snapshot") {

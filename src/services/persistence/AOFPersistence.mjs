@@ -18,27 +18,10 @@ export default class AOFPersistence {
     }
   }
 
-  async append(command, args) {
+  async append({command, args}) {
     const entry = JSON.stringify({ command, args }) + "\n"
     await fs.appendFile(this.aofPath, entry)
   }
-
-  serializeCommand(command, args) {
-    return JSON.stringify({
-      timestamp: Date.now(),
-      command,
-      type: command.type,
-      args: args.map((arg) => arg.toString()),
-    })
-  }
-
-  // formatCommand(command, args) {
-  //   return JSON.stringify({
-  //     timestamp: Date.now(),
-  //     command,
-  //     args,
-  //   })
-  // }
 
   async replay() {
     try {
