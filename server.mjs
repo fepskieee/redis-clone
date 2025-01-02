@@ -3,7 +3,7 @@ import { logger, logWithLine } from "./src/configs/logger.mjs"
 import { lookUpCommand } from "./src/models/command-lookup.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { nedis } from "./src/services/nedis.mjs"
-import { getCurrentFilename, isEmptyObject } from "./src/utils/helpers.mjs"
+import { getCurrentFilename } from "./src/utils/helpers.mjs"
 
 const server = net.createServer()
 const host = process.env.HOST || "127.0.0.1"
@@ -11,6 +11,11 @@ const port = process.env.PORT || 6379
 
 const namespace = getCurrentFilename(import.meta.url)
 const serverLogger = logger(namespace)
+
+// process.on("SIGINT", async () => {
+//   await nedis.persistence.saveSnapshot()
+//   process.exit(0)
+// })
 
 server.on("connection", (socket) => {
   const { remoteAddress, remotePort, remoteFamily } = socket
@@ -78,4 +83,5 @@ server.on("error", (err) => {
 
 server.listen(port, host, () => {
   serverLogger.info(`Nedis server is listening on ${host}:${port}`)
+  nedis.initialize()
 })

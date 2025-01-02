@@ -1,4 +1,12 @@
+import { logger, logWithLine } from "../configs/logger.mjs"
+import { getCurrentFilename } from "../utils/helpers.mjs"
 import Strings from "./Strings.mjs"
+import PersistenceManager from "./persistence/PersistenceManager.mjs"
+
+const namespace = getCurrentFilename(import.meta.url)
+const nedisLogger = logger(namespace)
+
+const persistence = new PersistenceManager()
 
 const commandCategories = {
   strings: (command, args, category) => Strings[command](args, category),
@@ -14,6 +22,7 @@ const commandCategories = {
 
 const executeCommand = ({ command, args }, category) => {
   const response = commandCategories[category](command, args, category)
+  persistence.logCommand(command, args)
 
   return response
 }
@@ -31,4 +40,9 @@ const parseCommand = (data) => {
   return { numArgs, command, args }
 }
 
-export const nedis = { parseCommand, executeCommand }
+const initialize = () => {
+  nedisLogger.info("Persistence mode: in-memory")
+  // persistence.restore()
+}
+
+export const nedis = { parseCommand, executeCommand, initialize }
