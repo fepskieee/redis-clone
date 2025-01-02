@@ -1,3 +1,4 @@
+import config from "../configs/config.json" with { type: "json" }
 import { logger, logWithLine } from "../configs/logger.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
 import Strings from "./Strings.mjs"
@@ -42,7 +43,13 @@ const parseCommand = (data) => {
 
 const initialize = () => {
   nedisLogger.info("Persistence mode: in-memory")
-  // persistence.restore()
+
+  // if (config.snapshot === "aof") {
+  //   nedisLogger.info("Persistence mode: append-only-file")
+  // } else if (config.snapshot === "snapshot") {
+  //   nedisLogger.info("Persistence mode: snapshot")
+  // } else nedisLogger.info("Persistence mode: in-memory")
+  persistence.restore()
 }
 
 export const nedis = { parseCommand, executeCommand, initialize }

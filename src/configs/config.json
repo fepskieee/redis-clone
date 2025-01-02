@@ -1,0 +1,8 @@
+{
+  "snapshotInterval": 60000,
+  "dataDir": "data",
+  "aofFilename": "appendonly.aof",
+  "snapshotFilename": "snapshot.rdb",
+  "backupCount": 3,
+  "compressionEnabled": true
+}
