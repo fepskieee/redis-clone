@@ -1,26 +1,37 @@
 const timerMap = new Map()
 
-export const get = (key) => {
+const get = (key) => {
   return timerMap.get(key)
 }
 
-export const set = (key, values) => {
+const set = (key, values) => {
   return timerMap.set(key, values)
 }
 
-export const del = (key) => {
+const del = (key) => {
   return timerMap.delete(key)
 }
 
-export const has = (key) => {
+const has = (key) => {
   return timerMap.has(key)
 }
 
-export const keys = () => {
+const getTimerMap = () => {
   return structuredClone(timerMap)
 }
 
-export const flushall = () => {
+const setTimerMap = (newMap) => {
+  if (!newMap instanceof Map || isValidEntry(newMap)) {
+    throw new Error(
+      "Provided argument must be a Map object or key-value entries"
+    )
+  }
+
+  timerMap.clear()
+  timerMap.set(newMap)
+}
+
+const flushall = () => {
   timerMap.clear()
 }
 
@@ -29,7 +40,8 @@ const timer = {
   set,
   del,
   has,
-  keys,
+  getTimerMap,
+  setTimerMap,
   flushall,
 }
 
