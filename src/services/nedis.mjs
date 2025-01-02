@@ -29,7 +29,6 @@ const executeCommand = (data) => {
   const response = category[command](args, type, socket)
 
   if (response.charAt(0) !== "-") {
-    nedisLogger.info(`Received: ${command} ${args.join(" ")}`)
     persistence.aofLogCommand({ command, args })
   }
 

@@ -37,11 +37,15 @@ server.on("connection", (socket) => {
       const { type } = lookUpCommand(parseData.command)
       const data = { parseData, type, socket }
       response = nedis.executeCommand(data)
+
+      if (response.charAt(0) !== "-") {
+        serverLogger.info(
+          `Received: ${parseData.command} ${parseData.args.join(" ")}`
+        )
+      }
     } catch (error) {
-      serverLogger.error(`-ERR unknown command '${parseData.command}'\r\n`)
       response = `-ERR unknown command '${parseData.command}'\r\n`
     }
-
     socket.write(response)
   })
 
