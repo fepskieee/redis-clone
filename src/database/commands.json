@@ -239,6 +239,14 @@
     "RENAME": {
       "description": "Renames a key",
       "args": ["oldkey", "newkey"]
+    },
+    "COMMAND": {
+      "description": "Extra: Do not use",
+      "args": []
+    },
+    "INFO": {
+      "description": "Extra: Do not use",
+      "args": []
     }
   }
 }
