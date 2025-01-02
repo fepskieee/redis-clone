@@ -1,4 +1,4 @@
-import { logger, logWithLine } from "../configs/logger.mjs"
+import { logger } from "../configs/logger.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
 import Strings from "./Strings.mjs"
 import Lists from "./Lists.mjs"

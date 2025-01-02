@@ -1,4 +1,5 @@
 {
+  "mode": ["aof", "snapshot"],
   "snapshotInterval": 60000,
   "directory": "data",
   "aofFilename": "appendonly.aof",
