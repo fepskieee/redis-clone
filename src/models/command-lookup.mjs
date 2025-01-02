@@ -1,12 +1,12 @@
 import commands from "../database/commands.json" with { type: "json" }
 
 export const lookUpCommand = (command) => {
-  for (const category in commands) {
-    if(command in commands[category]) {
+  for (const type in commands) {
+    if(command in commands[type]) {
       return {
-        category,
+        type,
         command,
-        ...commands[category][command]
+        ...commands[type][command]
       }
     }
   }
