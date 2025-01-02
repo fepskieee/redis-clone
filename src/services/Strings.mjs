@@ -31,7 +31,7 @@ class Strings {
   static ERR_MSG_NOT_STRING = "-ERR Value is not a string\r\n"
   static ERR_MSG_EXCEED_512MB = "-ERR Exceeds memory limit of 512MB\r\n"
 
-  static GET([key], category) {
+  static GET([key], type) {
     if (arguments[0].length > 1) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -43,11 +43,10 @@ class Strings {
     }
 
     if (!store.has(key)) {
-      stringsLogger.info(Strings.MSG_EMPTY)
       return Strings.MSG_EMPTY
     }
 
-    if (store.get(key).type !== category) {
+    if (store.get(key).type !== type) {
       stringsLogger.error(Strings.WRONGTYPE_MSG_OEPRATION)
       return Strings.WRONGTYPE_MSG_OEPRATION
     }
@@ -57,7 +56,7 @@ class Strings {
     return `$${result.length}\r\n${result}\r\n`
   }
 
-  static SET([key, value, option, time], category) {
+  static SET([key, value, option, time], type) {
     if (arguments[0].length % 2 !== 0) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -79,7 +78,7 @@ class Strings {
       return Strings.ERR_MSG_EXCEED_512MB
     }
 
-    store.set(key, { type: category, value })
+    store.set(key, { type, value })
 
     if (timer.has(key) && timer.get(key).timeoutId) {
       clearTimeout(timer.get(key).timeoutId)
@@ -123,7 +122,7 @@ class Strings {
     return Strings.MSG_SUCCESS
   }
 
-  static SETNX([key, value], category) {
+  static SETNX([key, value], type) {
     if (arguments[0].length > 2) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -134,10 +133,10 @@ class Strings {
       return Strings.ERR_MSG_KEY_EXISTS
     }
 
-    return Strings.SET([key, value], category)
+    return Strings.SET([key, value], type)
   }
 
-  static MGET(keys, category) {
+  static MGET(keys, type) {
     if (!keys || keys.length < 1) {
       stringsLogger.error(Strings.ERR_MSG_MGET_WRONG_NUMBER_ARGS)
       return `${Strings.ERR_MSG_MGET_WRONG_NUMBER_ARGS}`
@@ -146,7 +145,7 @@ class Strings {
     const result = keys
       .map((key) => {
         if (!store.has(key)) return Strings.MSG_EMPTY
-        if (store.get(key).type !== category) return Strings.MSG_EMPTY
+        if (store.get(key).type !== type) return Strings.MSG_EMPTY
 
         const result = store.get(key).value
 
@@ -157,7 +156,7 @@ class Strings {
     return result
   }
 
-  static INCR([key], category) {
+  static INCR([key], type) {
     if (arguments[0].length > 1) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -169,10 +168,10 @@ class Strings {
     }
 
     if (!store.has(key)) {
-      store.set(key, { type: category, value: "0" })
+      store.set(key, { type, value: "0" })
     }
 
-    if (store.get(key).type !== category) {
+    if (store.get(key).type !== type) {
       stringsLogger.error(Strings.WRONGTYPE_MSG_OEPRATION)
       return Strings.WRONGTYPE_MSG_OEPRATION
     }
@@ -190,7 +189,7 @@ class Strings {
     return `:${value}\r\n`
   }
 
-  static INCRBY([key, increment], category) {
+  static INCRBY([key, increment], type) {
     if (arguments[0].length > 2) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -207,7 +206,7 @@ class Strings {
     }
 
     if (!store.has(key)) {
-      store.set(key, { type: category, value: "0" })
+      store.set(key, { type, value: "0" })
     }
 
     let value = store.get(key).value
@@ -223,7 +222,7 @@ class Strings {
     return `:${value}\r\n`
   }
 
-  static INCRBYFLOAT([key, increment], category) {
+  static INCRBYFLOAT([key, increment], type) {
     if (arguments[0].length > 2) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR
@@ -240,7 +239,7 @@ class Strings {
     }
 
     if (!store.has(key)) {
-      store.set(key, { type: category, value: "0" })
+      store.set(key, { type, value: "0" })
     }
 
     let value = store.get(key).value
