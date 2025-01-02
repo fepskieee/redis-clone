@@ -1,3 +1,5 @@
+import { isValidEntry } from "../utils/helpers.mjs"
+
 const storeMap = new Map()
 
 const get = (key) => {
@@ -20,6 +22,17 @@ const getStoreMap = () => {
   return structuredClone(storeMap)
 }
 
+const setStoreMap = (newMap) => {
+  if (!newMap instanceof Map && isValidEntry(newMap)) {
+    throw new Error(
+      "Provided argument must be a Map object or key-value entries"
+    )
+  }
+
+  storeMap.clear()
+  storeMap.set(newMap)
+}
+
 const flushall = () => {
   storeMap.clear()
 }
@@ -30,6 +43,7 @@ const store = {
   del,
   has,
   getStoreMap,
+  setStoreMap,
   flushall,
 }
 
