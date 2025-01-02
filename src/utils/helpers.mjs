@@ -19,7 +19,7 @@ export const isEmptyObject = (obj) => {
   return Object.entries(obj).length === 0 && obj.constructor === Object
 }
 
-const isValidEntry = (value) => {
+export const isValidEntry = (value) => {
   return (
     value &&
     typeof value[Symbol.iterator] === "function" &&
