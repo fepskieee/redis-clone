@@ -27,3 +27,4 @@ dist-ssr
 
 ncat_logs.txt
 RESP*.md
+*.rdb
