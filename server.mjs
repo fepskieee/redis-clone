@@ -12,11 +12,6 @@ const port = process.env.PORT || 6379
 const namespace = getCurrentFilename(import.meta.url)
 const serverLogger = logger(namespace)
 
-process.on("SIGINT", async () => {
-  await nedis.persistence.saveSnapshot()
-  process.exit(0)
-})
-
 server.on("connection", (socket) => {
   const { remoteAddress, remotePort, remoteFamily } = socket
 
@@ -37,15 +32,13 @@ server.on("connection", (socket) => {
 
   socket.on("data", (data) => {
     const parseData = nedis.parseCommand(data)
-    const { category } = lookUpCommand(parseData.command)
 
-    serverLogger.info(
-      `RECEIVE: ${parseData.command} ${parseData.args.join(" ")}`
-    )
-
-    if (category) {
-      response = nedis.executeCommand(parseData, category)
-    } else {
+    try {
+      const { type } = lookUpCommand(parseData.command)
+      const data = { parseData, type, socket }
+      response = nedis.executeCommand(data)
+    } catch (error) {
+      serverLogger.error(`-ERR unknown command '${parseData.command}'\r\n`)
       response = `-ERR unknown command '${parseData.command}'\r\n`
     }
 
@@ -83,5 +76,4 @@ server.on("error", (err) => {
 
 server.listen(port, host, () => {
   serverLogger.info(`Nedis server is listening on ${host}:${port}`)
-  nedis.initialize()
 })
