@@ -5,7 +5,7 @@ import store from "../../models/store.mjs"
 
 export default class AOFPersistence {
   constructor() {
-    this.dataDir = path.join(process.cwd(), config.dataDir)
+    this.dataDir = path.join(process.cwd(), config.directory)
     this.aofPath = path.join(this.dataDir, config.aofFilename)
     this.ensureDataDir()
   }

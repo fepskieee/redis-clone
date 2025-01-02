@@ -12,14 +12,14 @@ const namespace = getCurrentFilename(import.meta.url)
 const snapshotLogger = logger(namespace)
 
 export default class SnapshotPersistence {
-  DB_DEFAULT_FILE = path.join(__dirname, "snapshot.rdb")
+  DB_DEFAULT_FILE = path.join(__dirname, "snapshot.ndb")
 
-  constructor({ dataDir, snapshotFilename} = {}) {
-    if (config && config.dataDir) {
-      this.dataDir = path.join(process.cwd(), config.dataDir)
+  constructor({ dir, snapshotFilename} = {}) {
+    if (config && config.directory) {
+      this.dataDir = path.join(process.cwd(), config.directory)
     }
-    else if (dataDir) {
-      this.dataDir = path.join(process.cwd(), dataDir)
+    else if (dir) {
+      this.dataDir = path.join(process.cwd(), dir)
     }
     
     if (config && config.snapshotFilename) {
@@ -51,7 +51,7 @@ export default class SnapshotPersistence {
     if (!fsp.access(this.db)) return
     
     try {
-      const data = await fsp.readFiles(this.db, "utf-8")
+      const data = await fsp.readFile(this.db, "utf-8")
       const parseData = JSON.parse(data) || {}
 
       if (!this.validateSnapshot(parseData.store) && !this.validateSnapshot(parseData.timer)) {

@@ -49,7 +49,7 @@ const initialize = () => {
   // } else if (config.snapshot === "snapshot") {
   //   nedisLogger.info("Persistence mode: snapshot")
   // } else nedisLogger.info("Persistence mode: in-memory")
-  persistence.restore()
+  // persistence.restore()
 }
 
 export const nedis = { parseCommand, executeCommand, initialize }

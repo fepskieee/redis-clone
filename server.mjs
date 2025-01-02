@@ -12,10 +12,10 @@ const port = process.env.PORT || 6379
 const namespace = getCurrentFilename(import.meta.url)
 const serverLogger = logger(namespace)
 
-// process.on("SIGINT", async () => {
-//   await nedis.persistence.saveSnapshot()
-//   process.exit(0)
-// })
+process.on("SIGINT", async () => {
+  await nedis.persistence.saveSnapshot()
+  process.exit(0)
+})
 
 server.on("connection", (socket) => {
   const { remoteAddress, remotePort, remoteFamily } = socket

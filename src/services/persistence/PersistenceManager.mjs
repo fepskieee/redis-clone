@@ -1,7 +1,12 @@
 import config from "../../configs/config.json" with { type: "json" }
+import { logger } from "../../configs/logger.mjs"
 import store from "../../models/store.mjs"
 import AOFPersistence from "./AOFPersistence.mjs"
 import SnapshotPersistence from "./SnapshotPersistence.mjs"
+import { getCurrentFilename } from "../../utils/helpers.mjs"
+
+const namespace = getCurrentFilename(import.meta.url)
+const pmLogger = logger(namespace)
 
 export default class PersistenceManager {
   constructor(snapshotIntervalMs = config.snapshotInterval) {
@@ -20,7 +25,7 @@ export default class PersistenceManager {
     try {
       await this.aof.append(command, args)
     } catch (err) {
-      console.error("Failed to log command:", err)
+      pmLogger.error("Failed to log command:", err)
       
       throw new Error("Persistence error")
     }
@@ -32,7 +37,7 @@ export default class PersistenceManager {
 
       await this.snapshot.save(dataStore)
     } catch (err) {
-      console.error("Failed to save snapshot:", err)
+      pmLogger.error(err, `Failed to save snapshot: ${err.message}`)
 
       throw new Error("Snapshot error")
     }
@@ -43,13 +48,13 @@ export default class PersistenceManager {
       const snapshot = await this.snapshot.load()
 
       if (snapshot) {
-        store.restore(snapshot)
+        store.setStoreMap(snapshot)
       }
 
       await this.aof.replay()
     } catch (err) {
       console.error("Failed to restore data:", err)
-      
+
       throw new Error("Restore error")
     }
   }
