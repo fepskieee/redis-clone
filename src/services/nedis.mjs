@@ -30,7 +30,7 @@ const executeCommand = (data) => {
 
   if (response.charAt(0) !== "-") {
     nedisLogger.info(`Received: ${command} ${args.join(" ")}`)
-    persistence.logCommand({ command, args })
+    persistence.aofLogCommand({ command, args })
   }
 
   return response
@@ -50,15 +50,18 @@ const parseCommand = (data) => {
 }
 
 const initialize = () => {
-  nedisLogger.info(`Initializing Nedis...`)
-
   nedisLogger.info("Persistence mode: in-memory")
   // if (config.snapshot === "aof") {
   //   nedisLogger.info("Persistence mode: append-only-file")
   // } else if (config.snapshot === "snapshot") {
   //   nedisLogger.info("Persistence mode: snapshot")
   // } else nedisLogger.info("Persistence mode: in-memory")
-  // persistence.restore()
+  persistence.restore()
 }
 
-export const nedis = { parseCommand, executeCommand, initialize }
+export const nedis = {
+  parseCommand,
+  executeCommand,
+  initialize,
+  commandCategories,
+}

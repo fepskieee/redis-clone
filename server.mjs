@@ -1,5 +1,5 @@
 import net from "net"
-import { logger, logWithLine } from "./src/configs/logger.mjs"
+import { logger } from "./src/configs/logger.mjs"
 import { lookUpCommand } from "./src/models/command-lookup.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { nedis } from "./src/services/nedis.mjs"
@@ -76,4 +76,6 @@ server.on("error", (err) => {
 
 server.listen(port, host, () => {
   serverLogger.info(`Nedis server is listening on ${host}:${port}`)
+  serverLogger.info(`Initializing Nedis...`)
+  nedis.initialize()
 })

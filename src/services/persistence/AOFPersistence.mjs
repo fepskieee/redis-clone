@@ -1,7 +1,8 @@
 import fs from "fs/promises"
 import path from "path"
 import config from "../../configs/config.json" with { type: "json" }
-import store from "../../models/store.mjs"
+import { lookUpCommand } from "../../models/command-lookup.mjs"
+import { nedis } from "../nedis.mjs"
 
 export default class AOFPersistence {
   constructor() {
@@ -27,10 +28,12 @@ export default class AOFPersistence {
     try {
       const data = await fs.readFile(this.aofPath, "utf-8")
       const commands = data.split("\n").filter((line) => line)
-
+      
       for (const line of commands) {
         const { command, args } = JSON.parse(line)
-        await store[command.toLowerCase()](...args)
+        const { type } = lookUpCommand(command)
+
+        nedis.executeCommand({ parseData: { command, args }, type })
       }
     } catch (err) {
       if (err.code === "ENOENT") return []

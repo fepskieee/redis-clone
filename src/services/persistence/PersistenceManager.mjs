@@ -21,11 +21,11 @@ export default class PersistenceManager {
     }, intervalMs)
   }
 
-  async logCommand(command, args) {
+  async aofLogCommand(data) {
     try {
-      await this.aof.append(command, args)
+      await this.aof.append(data)
     } catch (err) {
-      pmLogger.error("Failed to log command:", err)
+      pmLogger.error(err, `Failed to log command: ${err}`)
       
       throw new Error("Persistence error")
     }
@@ -45,11 +45,11 @@ export default class PersistenceManager {
 
   async restore() {
     try {
-      const snapshot = await this.snapshot.load()
+      // const snapshot = await this.snapshot.load()
 
-      if (snapshot) {
-        store.setStoreMap(snapshot)
-      }
+      // if (snapshot) {
+      //   store.setStoreMap(snapshot)
+      // }
 
       await this.aof.replay()
     } catch (err) {
