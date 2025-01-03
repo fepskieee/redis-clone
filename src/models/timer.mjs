@@ -21,7 +21,7 @@ const getTimerMap = () => {
 }
 
 const setTimerMap = (newMap) => {
-  if (!newMap instanceof Map || isValidEntry(newMap)) {
+  if (!newMap instanceof Map) {
     throw new Error(
       "Provided argument must be a Map object or key-value entries"
     )

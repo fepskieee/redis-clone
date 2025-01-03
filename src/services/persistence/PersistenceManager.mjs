@@ -1,6 +1,7 @@
 import config from "../../configs/config.json" with { type: "json" }
-import { logger } from "../../configs/logger.mjs"
+import { logger, logWithLine } from "../../configs/logger.mjs"
 import store from "../../models/store.mjs"
+import timer from "../../models/timer.mjs"
 import AOFPersistence from "./AOFPersistence.mjs"
 import SnapshotPersistence from "./SnapshotPersistence.mjs"
 import { getCurrentFilename } from "../../utils/helpers.mjs"
@@ -9,13 +10,18 @@ const namespace = getCurrentFilename(import.meta.url)
 const pmLogger = logger(namespace)
 
 export default class PersistenceManager {
-  constructor(snapshotIntervalMs = config.snapshotInterval) {
+  snapshotIntervalMs = config.snapshotInterval
+  mode = config.mode
+
+  constructor() {
     this.aof = new AOFPersistence()
     this.snapshot = new SnapshotPersistence()
-    this.startSnapshotScheduler(snapshotIntervalMs)
+    this.startSnapshotScheduler(this.snapshotIntervalMs || 0)
   }
 
   startSnapshotScheduler(intervalMs) {
+    if (intervalMs === 0) return
+
     setInterval(async () => {
       await this.saveSnapshot()
     }, intervalMs)
@@ -33,29 +39,30 @@ export default class PersistenceManager {
 
   async saveSnapshot() {
     try {
-      const dataStore = store.getStoreMap()
+      
+      const snapshot = {
+        storeData: Object.fromEntries(store.getStoreMap()),
+        timerData: Object.fromEntries(timer.getTimerMap())
+      }
 
-      await this.snapshot.save(dataStore)
+      await this.snapshot.save(snapshot)
     } catch (err) {
       pmLogger.error(err, `Failed to save snapshot: ${err.message}`)
-
       throw new Error("Snapshot error")
     }
   }
 
   async restore() {
     try {
-      // const snapshot = await this.snapshot.load()
+      if(this.mode === "snapshot" || this.mode === "both") { 
+        await this.snapshot.load()
+      }
 
-      // if (snapshot) {
-      //   store.setStoreMap(snapshot)
-      // }
-
-      await this.aof.replay()
+      if(this.mode === "aof" || this.mode === "both") {
+        await this.aof.replay()
+      }
     } catch (err) {
-      console.error("Failed to restore data:", err)
-
-      throw new Error("Restore error")
+      pmLogger.error(`Failed to restore data: ${err}`)
     }
   }
 

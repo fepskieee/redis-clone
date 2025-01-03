@@ -3,6 +3,8 @@ import {fileURLToPath} from "url"
 import path, {dirname} from "path"
 import config from "../../configs/config.json" with { type: "json" }
 import { logger } from "../../configs/logger.mjs"
+import store from "../../models/store.mjs"
+import timer from "../../models/timer.mjs"
 import { getCurrentFilename, isValidEntry } from "../../utils/helpers.mjs"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -33,35 +35,40 @@ export default class SnapshotPersistence {
   }
 
   validateSnapshot(data) {
-    return data && (isValidEntry(data) || data instanceof Map)
+    return data instanceof Map
   }
 
   async save(data) {
-    const serializedData = JSON.stringify(data)
-
     try {
+      const serializedData = JSON.stringify(data, null, 2)
       await fsp.writeFile(this.db, serializedData)
-      snapshotLogger.info(`Saved data store to file: ${this.db}`)
+
+      const stats = await fsp.stat(this.db)
+      if (stats.size > 0) {
+        snapshotLogger.info('Snapshot saved successfully')
+        return
+      }
+      throw new Error("Failed to save snapshot")
     } catch (err) {
-      snapshotLogger.info(`Failed to save snapshot: ${err.message}`)
+      snapshotLogger.error(`Failed saving: ${err.message}`)
     }
   }
 
   async load() {
-    if (!fsp.access(this.db)) return
-    
     try {
       const data = await fsp.readFile(this.db, "utf-8")
-      const parseData = JSON.parse(data) || {}
-
-      if (!this.validateSnapshot(parseData.store) && !this.validateSnapshot(parseData.timer)) {
-        snapshotLogger.error("Snapshot is corrupted")
-        return new Map()
+      const parseData = JSON.parse(data)
+      
+      if (!parseData?.storeData || !parseData?.timerData) {
+        throw new Error("Invalid snapshot structure")
       }
-        
-      snapshotLogger.info("Loaded data store successfully...")
 
-      return parseData
+      const storeSnapshot = new Map(Object.entries(parseData.storeData))
+      const timerSnapshot = new Map(Object.entries(parseData.timerData))
+
+      snapshotLogger.info("Snapshot loaded successfully...")
+      store.setStoreMap(storeSnapshot)
+      timer.setTimerMap(timerSnapshot)
     } catch (err) {
       snapshotLogger.error(`Failed to load snapshot: ${err.message}`)
     }

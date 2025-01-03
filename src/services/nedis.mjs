@@ -28,8 +28,8 @@ const executeCommand = (data) => {
   const category = commandCategories[type]
   const response = category[command](args, type, socket)
 
-  if (response.charAt(0) !== "-") {
-    persistence.aofLogCommand({ command, args })
+  if (persistence.mode === "aof" || persistence.mode === "both") {
+    response.charAt(0) !== "-" && persistence.aofLogCommand({ command, args })
   }
 
   return response
@@ -50,11 +50,6 @@ const parseCommand = (data) => {
 
 const initialize = () => {
   nedisLogger.info("Persistence mode: in-memory")
-  // if (config.snapshot === "aof") {
-  //   nedisLogger.info("Persistence mode: append-only-file")
-  // } else if (config.snapshot === "snapshot") {
-  //   nedisLogger.info("Persistence mode: snapshot")
-  // } else nedisLogger.info("Persistence mode: in-memory")
   persistence.restore()
 }
 

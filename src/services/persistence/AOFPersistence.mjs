@@ -1,13 +1,16 @@
 import fs from "fs/promises"
 import path from "path"
+import pLimit from "p-limit"
 import config from "../../configs/config.json" with { type: "json" }
 import { lookUpCommand } from "../../models/command-lookup.mjs"
 import { nedis } from "../nedis.mjs"
 
 export default class AOFPersistence {
+  
   constructor() {
     this.dataDir = path.join(process.cwd(), config.directory)
     this.aofPath = path.join(this.dataDir, config.aofFilename)
+    this.limit = pLimit(100);
     this.ensureDataDir()
   }
 
@@ -21,7 +24,7 @@ export default class AOFPersistence {
 
   async append({command, args}) {
     const entry = JSON.stringify({ command, args }) + "\n"
-    await fs.appendFile(this.aofPath, entry)
+    await this.limit(() => fs.appendFile(this.aofPath, entry))
   }
 
   async replay() {
@@ -42,7 +45,6 @@ export default class AOFPersistence {
   }
 
   async rotateLog(threshold = 1024 * 1024) {
-    // 1MB
     const stats = await fs.stat(this.aofPath)
     if (stats.size >= threshold) {
       // Create new AOF file
