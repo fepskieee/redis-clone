@@ -62,13 +62,13 @@
       "description": "Gets the length of a list",
       "args": ["list"]
     },
-    "LINSERT": {
-      "description": "Inserts an element before or after another element in a list",
-      "args": ["list", "before/after", "pivot", "value"]
+    "LMOVE": {
+      "description": "Atomically returns and removes the first/last element of the list and pushes it to another list",
+      "args": ["source", "destination", "wherefrom", "whereto"]
     },
-    "LREM": {
-      "description": "Removes elements from a list",
-      "args": ["list", "count", "value"]
+    "LTRIM": {
+      "description": "Trims a list to the specified range",
+      "args": ["list", "start", "stop"]
     }
   },
   "sets": {

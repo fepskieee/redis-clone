@@ -3,6 +3,7 @@ import { getCurrentFilename } from "../utils/helpers.mjs"
 import PersistenceManager from "./persistence/PersistenceManager.mjs"
 import Strings from "./Strings.mjs"
 import Lists from "./Lists.mjs"
+import Sets from "./Sets.mjs"
 import PubSub from "./pubsub/PubSub.mjs"
 
 const namespace = getCurrentFilename(import.meta.url)
@@ -13,7 +14,7 @@ let persistence
 const commandCategories = {
   strings: Strings,
   lists: Lists,
-  // sets: Sets,
+  sets: Sets,
   // hashes: Hash,
   // sortedSets: SortedSet,
   // hyperloglogs: Hyperlog,
