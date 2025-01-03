@@ -1,3 +1,5 @@
+import subscribersMap from "./subscribers.mjs"
+
 const channels = new Map()
 
 const get = (key) => {
@@ -42,9 +44,9 @@ const store = {
   set,
   del,
   has,
-  getChannelMap: getChannelsMap,
+  getChannelsMap,
   setChannelsMap,
   flushall,
 }
 
-export default store
+export default subscribersMap

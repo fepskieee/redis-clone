@@ -47,4 +47,4 @@ const store = {
   flushall,
 }
 
-export default store
+export default subscribersMap

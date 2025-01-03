@@ -4,6 +4,7 @@ import { lookUpCommand } from "./src/models/command-lookup.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
 import { nedis } from "./src/services/nedis.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
+import PubSub from "./src/services/pubsub/PubSub.mjs"
 
 const server = net.createServer()
 const host = process.env.HOST || "127.0.0.1"
@@ -55,6 +56,7 @@ server.on("connection", (socket) => {
 
   socket.on("close", () => {
     serverLogger.info(`Client disconnected ${clientInfo.id}`)
+    PubSub.handleDisconnect(socket)
     deleteClient(clientInfo.id)
 
     const totalClient = getClientMap()
