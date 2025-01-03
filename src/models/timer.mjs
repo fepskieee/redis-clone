@@ -28,7 +28,9 @@ const setTimerMap = (newMap) => {
   }
 
   timerMap.clear()
-  timerMap.set(newMap)
+  newMap.forEach((value, key) => {
+    timerMap.set(key, value)
+  })
 }
 
 const flushall = () => {

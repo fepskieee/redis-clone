@@ -30,7 +30,9 @@ const setStoreMap = (newMap) => {
   }
 
   storeMap.clear()
-  storeMap.set(newMap)
+  newMap.forEach((value, key) => {
+    storeMap.set(key, value)
+  })
 }
 
 const flushall = () => {
