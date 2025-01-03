@@ -1,8 +1,9 @@
 import { logger } from "../configs/logger.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
+import PersistenceManager from "./persistence/PersistenceManager.mjs"
 import Strings from "./Strings.mjs"
 import Lists from "./Lists.mjs"
-import PersistenceManager from "./persistence/PersistenceManager.mjs"
+import PubSub from "./pubsub/PubSub.mjs"
 
 const namespace = getCurrentFilename(import.meta.url)
 const nedisLogger = logger(namespace)
@@ -17,7 +18,7 @@ const commandCategories = {
   // sortedSets: SortedSet,
   // hyperloglogs: Hyperlog,
   // transactions: Transactions,
-  // pubsub: PubSub,
+  pubsub: PubSub,
   // keyspace: Keyspace,
 }
 
