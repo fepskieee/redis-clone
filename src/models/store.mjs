@@ -1,5 +1,3 @@
-import { isValidEntry } from "../utils/helpers.mjs"
-
 const storeMap = new Map()
 
 const get = (key) => {

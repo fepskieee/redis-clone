@@ -37,7 +37,7 @@ const flushall = () => {
   subscribersMap.clear()
 }
 
-const store = {
+const subscribers = {
   get,
   set,
   del,
@@ -47,4 +47,4 @@ const store = {
   flushall,
 }
 
-export default subscribersMap
+export default subscribers

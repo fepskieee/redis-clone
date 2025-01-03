@@ -1,25 +1,23 @@
-import subscribersMap from "./subscribers.mjs"
-
-const channels = new Map()
+const channelsMap = new Map()
 
 const get = (key) => {
-  return channels.get(key)
+  return channelsMap.get(key)
 }
 
 const set = (key, value) => {
-  return channels.set(key, value)
+  return channelsMap.set(key, value)
 }
 
 const del = (key) => {
-  return channels.delete(key)
+  return channelsMap.delete(key)
 }
 
 const has = (key) => {
-  return channels.has(key)
+  return channelsMap.has(key)
 }
 
 const getChannelsMap = () => {
-  return structuredClone(channels)
+  return structuredClone(channelsMap)
 }
 
 const setChannelsMap = (newMap) => {
@@ -29,17 +27,17 @@ const setChannelsMap = (newMap) => {
     )
   }
 
-  channels.clear()
+  channelsMap.clear()
   newMap.forEach((value, key) => {
-    channels.set(key, value)
+    channelsMap.set(key, value)
   })
 }
 
 const flushall = () => {
-  channels.clear()
+  channelsMap.clear()
 }
 
-const store = {
+const channels = {
   get,
   set,
   del,
@@ -49,4 +47,4 @@ const store = {
   flushall,
 }
 
-export default subscribersMap
+export default channels
