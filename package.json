@@ -5,8 +5,8 @@
   "type": "module",
   "main": "server.mjs",
   "scripts": {
-    "nedis-server": "node --watch server.mjs",
-    "nedis-cli": "memurai-cli -h 127.0.0.1 -p 6379",
+    "server": "node --watch server.mjs",
+    "cli": "memurai-cli -h 127.0.0.1 -p 6379",
     "ncat": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
     "telnet": "telnet 127.0.0.1 6379",
     "test": "vitest --watch",
