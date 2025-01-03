@@ -19,28 +19,15 @@ export default class SnapshotPersistence {
   SNAPSHOT_FILENAME = "snapshot.ndb"
 
   constructor({ dir, snapshotFilename} = {}) {
-    if (config && config.directory) {
-      this.dataDir = path.join(process.cwd(), config.directory)
-    }
-    else if (dir) {
-      this.dataDir = path.join(process.cwd(), dir)
-    }
-    else {
-      this.dataDir = path.join(process.cwd(), this.DIRECTORY)
-    }
-    
-    if (config && config.snapshotFilename) {
-      this.snapshotFilename = path.join(process.cwd(), config.snapshotFilename)
-    }
-    else if (snapshotFilename) {
-      this.snapshotFilename = snapshotFilename
-    }
-    else {
-      this.snapshotFilename = this.SNAPSHOT_FILENAME
-    }
-    
+    this.dataDir = path.join(process.cwd(), config.directory || dir || this.DIRECTORY)
+    this.snapshotFilename = path.join(process.cwd(), config.snapshotFilename || snapshotFilename || this.SNAPSHOT_FILENAME)
     this.db = path.resolve(this.dataDir, config.snapshotFilename) || this.DB_DEFAULT_FILE
-    this.ensureDataDir()
+  }
+
+  static async initialize(dir, aofFilename) {
+    const instance = new SnapshotPersistence(dir, aofFilename)
+    await instance.ensureDataDir()
+    return instance
   }
 
   async ensureDataDir() {
@@ -51,21 +38,17 @@ export default class SnapshotPersistence {
     }
   }
 
-  validateSnapshot(data) {
-    return data instanceof Map
-  }
-
   async save(data) {
     try {
       const serializedData = JSON.stringify(data, null, 2)
-      await fs.writeFile(this.db, serializedData)
+      await fs.writeFile(this.db, serializedData, { flag: 'w', flush: true })
 
       const stats = await fs.stat(this.db)
       if (stats.size > 0) {
         snapshotLogger.info('Snapshot saved successfully')
         return
       }
-      throw new Error("Failed to save snapshot")
+      throw new Error("Write to disk failed...")
     } catch (err) {
       snapshotLogger.error(`Failed saving: ${err.message}`)
     }

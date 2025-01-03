@@ -7,7 +7,7 @@ import PersistenceManager from "./persistence/PersistenceManager.mjs"
 const namespace = getCurrentFilename(import.meta.url)
 const nedisLogger = logger(namespace)
 
-const persistence = new PersistenceManager()
+let persistence
 
 const commandCategories = {
   strings: Strings,
@@ -48,9 +48,9 @@ const parseCommand = (data) => {
   return { numArgs, command, args }
 }
 
-const initialize = () => {
-  nedisLogger.info("Persistence mode: in-memory")
-  persistence.restore()
+const initialize = async () => {
+  persistence = await PersistenceManager.initialize()
+  await persistence.restore()
 }
 
 export const nedis = {

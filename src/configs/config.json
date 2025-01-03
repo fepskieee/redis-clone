@@ -1,8 +1,9 @@
 {
-  "mode": "both",
+  "mode": "snapshot",
   "snapshotInterval": 10000,
   "directory": "data",
   "aofFilename": "appendonly.aof",
   "snapshotFilename": "snapshot.ndb",
-  "backupCount": 3
+  "backupCount": 3,
+  "threshold": 0.2
 }

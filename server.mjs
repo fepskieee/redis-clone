@@ -78,8 +78,8 @@ server.on("error", (err) => {
   serverLogger.error(err, err.message)
 })
 
-server.listen(port, host, () => {
+server.listen(port, host, async () => {
   serverLogger.info(`Nedis server is listening on ${host}:${port}`)
   serverLogger.info(`Initializing Nedis...`)
-  nedis.initialize()
+  await nedis.initialize()
 })

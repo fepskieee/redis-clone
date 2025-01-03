@@ -12,11 +12,18 @@ const pmLogger = logger(namespace)
 export default class PersistenceManager {
   snapshotIntervalMs = config.snapshotInterval
   mode = config.mode
+  
+  static async initialize(dir, aofFilename) {
+    const instance = new PersistenceManager()
+    instance.aof = await AOFPersistence.initialize(dir, aofFilename)
+    instance.snapshot = await SnapshotPersistence.initialize(dir, aofFilename)
 
-  constructor() {
-    this.aof = new AOFPersistence()
-    this.snapshot = new SnapshotPersistence()
-    this.startSnapshotScheduler(this.snapshotIntervalMs || 0)
+    if (instance.mode === "snapshot" || instance.mode === "both") {
+      instance.startSnapshotScheduler(this.snapshotIntervalMs || 0)
+    }
+
+    pmLogger.info(`Persistence mode: ${instance.mode}`)
+    return instance
   }
 
   startSnapshotScheduler(intervalMs) {
@@ -66,6 +73,7 @@ export default class PersistenceManager {
       }
 
       if(this.mode === "aof" || this.mode === "both") {
+        await this.aof.rotateLog()
         await this.aof.replay()
       }
     } catch (err) {
