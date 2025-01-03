@@ -19,7 +19,6 @@ export default class PubSub {
   }
 
   static PUBLISH(args, type, socket) {
-    console.log("publish")
     const [channel, message] = args
     const subscribers = subscribersMap.get(channel)
 
