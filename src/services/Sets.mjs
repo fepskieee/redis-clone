@@ -1,3 +1,5 @@
+import store from "../models/store.mjs"
+
 class Sets {
   static MSG_SUCCESS = "+OK\r\n"
   static MSG_EMPTY = "$-1\r\n"
@@ -21,10 +23,39 @@ class Sets {
     }
 
     const set = store.get(key).value
-    members.forEach((member) => set.add(member))
+    let addedCount = 0
+    members.forEach((member) => {
+      if (!set.has(member)) {
+        set.add(member)
+        addedCount++
+      }
+    })
     store.set(key, { ...store.get(key), value: set })
 
-    return `:${set.size}\r\n`
+    return `:${addedCount}\r\n`
+  }
+
+  static SMEMBERS([key], type) {
+    if (arguments[0].length !== 1) {
+      stringsLogger.error(Sets.ERR_MSG_WRONG_NUMBER_ARGS)
+      return Sets.ERR_MSG_WRONG_NUMBER_ARGS
+    }
+
+    if (!store.has(key)) {
+      return Sets.MSG_EMPTY
+    }
+
+    if (!(store.get(key).value instanceof Set)) {
+      stringsLogger.error(Sets.ERR_MSG_NOT_SET)
+      return Sets.ERR_MSG_NOT_SET
+    }
+
+    const set = store.get(key).value
+    const result = [...set]
+      .map((member) => `$${member.length}\r\n${member}\r\n`)
+      .reduce((acc, curr) => acc + curr, `*${set.size}\r\n`)
+
+    return result
   }
 
   static SREM([key, ...members], type) {
