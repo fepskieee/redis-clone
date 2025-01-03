@@ -58,14 +58,14 @@ class Sets {
     return result
   }
 
-  static SREM([key, ...members], type) {
+  static SREM([key, ...members]) {
     if (arguments[0].length < 2) {
       stringsLogger.error(Sets.ERR_MSG_WRONG_NUMBER_ARGS)
       return Sets.ERR_MSG_WRONG_NUMBER_ARGS
     }
 
     if (!store.has(key)) {
-      return Sets.MSG_EMPTY
+      return ":0\r\n"
     }
 
     if (!(store.get(key).value instanceof Set)) {
@@ -74,13 +74,18 @@ class Sets {
     }
 
     const set = store.get(key).value
-    members.forEach((member) => set.delete(member))
+    let removedCount = 0
+    members.forEach((member) => {
+      if (set.delete(member)) {
+        removedCount++
+      }
+    })
     store.set(key, { ...store.get(key), value: set })
 
-    return `:${set.size}\r\n`
+    return `:${removedCount}\r\n`
   }
 
-  static SISMEMBER([key, member], type) {
+  static SISMEMBER([key, member]) {
     if (arguments[0].length !== 2) {
       stringsLogger.error(Sets.ERR_MSG_WRONG_NUMBER_ARGS)
       return Sets.ERR_MSG_WRONG_NUMBER_ARGS
