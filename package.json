@@ -5,13 +5,10 @@
   "type": "module",
   "main": "server.mjs",
   "scripts": {
-    "nedis-start": "node --watch server.mjs",
-    "nedis-cli": "node --watch ./redis/cli.mjs",
+    "nedis-server": "node --watch server.mjs",
+    "nedis-cli": "memurai-cli -h 127.0.0.1 -p 6379",
     "ncat": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
-    "memurai-cli": "memurai-cli -h 127.0.0.1 -p 6379",
-    "clean": "rm -rf ./error_log.txt",
     "telnet": "telnet 127.0.0.1 6379",
-    "sample": "node --watch ./redis/Sample.mjs",
     "test": "vitest --watch",
     "test:ui": "vitest --watch --ui"
   },

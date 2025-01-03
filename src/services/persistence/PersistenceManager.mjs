@@ -39,16 +39,23 @@ export default class PersistenceManager {
 
   async saveSnapshot() {
     try {
+      // const storeSnapshot = storeMap && Object.keys(storeMap).length > 0 
+      // ? new Map(Object.entries(storeMap)) 
+      // : new Map()
       
+      // const timerSnapshot = timerMap && Object.keys(timerMap).length > 0 
+      // ? new Map(Object.entries(timerMap)) 
+      // : new Map()
+
       const snapshot = {
-        storeData: Object.fromEntries(store.getStoreMap()),
-        timerData: Object.fromEntries(timer.getTimerMap())
+        storeMap: Object.fromEntries(store.getStoreMap()),
+        // TODO: timerMap: Object.fromEntries(timer.getTimerMap())
       }
 
       await this.snapshot.save(snapshot)
     } catch (err) {
       pmLogger.error(err, `Failed to save snapshot: ${err.message}`)
-      throw new Error("Snapshot error")
+      // throw new Error(`Snapshot error ${err.message}`)
     }
   }
 

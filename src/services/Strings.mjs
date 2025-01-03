@@ -88,7 +88,7 @@ class Strings {
 
     let timeoutId = null
     let intervalId = null
-    let remainingTime = null
+    let remainingTime = 0
 
     const duration = Number(time)
     const ttl = duration && duration > 0 ? duration : 0
