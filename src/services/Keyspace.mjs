@@ -66,7 +66,6 @@ class Keyspace {
   }
 
   static TTL([key]) {
-    console.log(store.has(key))
     if (!store.has(key)) {
       return `:-2\r\n`
     }
@@ -75,7 +74,6 @@ class Keyspace {
     if (expirationTime === undefined) {
       return `:-1\r\n`
     }
-    console.log(timer.get(key).remainingTime)
     const ttl = timer.get(key).remainingTime
     return `:${ttl}\r\n`
   }
