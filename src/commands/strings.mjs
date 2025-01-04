@@ -1,7 +1,6 @@
 import { logger } from "../configs/logger.mjs"
 import { storeMap } from "../models/dataStore.mjs"
 import {
-  ERR_MSG_SYNTAX_ERROR,
   ERR_MSG_WRONG_NUMBER_ARGS,
   ERR_MSG_WRONGTYPE_OPERATION,
 } from "../utils/constants/messages.js"
@@ -18,17 +17,17 @@ export const get = (key) => {
     return nesp.bulkString()
   }
 
-  if (store.get(key).type !== "strings") {
+  if (storeMap.get(key).type !== "strings") {
     stringsLogger.error(ERR_MSG_WRONGTYPE_OPERATION)
     return nesp.WRONGTYPE_MSG_OEPRATION
   }
 
-  const value = store.get(key).value
+  const value = storeMap.get(key).value
 
   return nesp.bulkString(value)
 }
 
-export const set = (key, value, options = {}) => {}
+export const set = (key, value, options) => {}
 export const mget = (keys) => {}
 export const incr = (key) => {}
 export const incrby = (key, increment) => {}
