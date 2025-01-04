@@ -1,13 +1,20 @@
+import { EventEmitter } from "events"
 import subscribers from "../../models/subscribers.mjs"
 import channels from "../../models/channels.mjs"
 
-export default class PubSub {
+export default class PubSub extends EventEmitter {
+  static emitter = new EventEmitter()
+  constructor() {
+    super()
+  }
+
   static SUBSCRIBE(args, type, socket) {
     const [topic] = args
 
-    socket.isInSubscribeMode = true
-    socket.isPubSubClient = true
-    socket.subscribedCount = (socket.subscribedCount || 0) + 1
+    socket.isSubscriber = true
+    // socket.isInSubscribeMode = true
+    // socket.isPubSubClient = true
+    // socket.subscribedCount = (socket.subscribedCount || 0) + 1
 
     if (!subscribers.has(topic)) {
       subscribers.set(topic, new Set())
@@ -19,13 +26,37 @@ export default class PubSub {
     }
     channels.get(socket).add(topic)
 
-    socket.write(
-      `*3\r\n$9\r\nsubscribe\r\n$${topic.length}\r\n${topic}\r\n:${
-        subscribers.get(topic).size
-      }\r\n`
-    )
+    this.emitter.on("message", (topic, message) => {
+      subscribers.get(topic).forEach((client) => {
+        console.log(topic)
+        client.write(
+          `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+        )
+      })
+    })
+    // this.emitter.on("message", (topic, message) => {
+    //   subscribers.get(topic).forEach((client) => {
+    //     console.log("subscribe")
+    //     client.write(
+    //       `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+    //     )
+    //   })
+    // })
 
-    return null
+    // this.emitter.on("message", (channel, message) => {
+    //   if (topic === channel) {
+    //     socket.write(
+    //       `*3\r\n$9\r\nsubscribe\r\n$${topic.length}\r\n${topic}\r\n:${
+    //         subscribers.get(topic).size
+    //       }\r\n`
+    //     )
+    //   }
+    // })
+
+    return `+OK\r\n`
+    // return `*3\r\n$9\r\nsubscribe\r\n$${topic.length}\r\n${topic}\r\n:${
+    //   subscribers.get(topic).size
+    // }\r\n`
   }
 
   static PUBLISH(args, type, socket) {
@@ -36,13 +67,13 @@ export default class PubSub {
       return `:0\r\n`
     }
 
-    connectedSubscribers.forEach((subscriber) => {
-      if (subscriber.writable && subscriber.isPubSubClient) {
-        subscriber.write(
-          `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
-        )
-      }
-    })
+    this.emitter.emit("message", topic, message)
+    // connectedSubscribers.forEach((subscriber) => {
+    //   console.log("publish")
+    //   subscriber.write(
+    //     `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+    //   )
+    // })
 
     return `:${connectedSubscribers.size}\r\n`
   }
