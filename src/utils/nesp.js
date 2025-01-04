@@ -1,4 +1,4 @@
-export const reply = {
+export default reply = {
   simpleString: (strings = "OK") => `+${strings}\r\n`,
   simpleError: (strings = "ERR") => `-${strings}\r\n`,
   integer: (integer) => `:${integer}\r\n`,
