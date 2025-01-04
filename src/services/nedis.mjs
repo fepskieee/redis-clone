@@ -14,6 +14,7 @@ let persistence
 
 const commandCategories = {
   strings: Strings,
+  strings: Strings,
   lists: Lists,
   sets: Sets,
   pubsub: PubSub,

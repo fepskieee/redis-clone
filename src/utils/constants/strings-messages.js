@@ -1,1 +1,0 @@
-const ERR_MSG = ""

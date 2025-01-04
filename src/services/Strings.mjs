@@ -1,4 +1,5 @@
 import { logger } from "../configs/logger.mjs"
+import strings from "../commands/strings.mjs"
 import store from "../models/store.mjs"
 import timer from "../models/timer.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
@@ -32,6 +33,7 @@ class Strings {
   static ERR_MSG_EXCEED_512MB = "-ERR Exceeds memory limit of 512MB\r\n"
 
   static GET([key], type) {
+    strings.get(key)
     if (arguments[0].length > 1) {
       stringsLogger.error(Strings.ERR_MSG_SYNTAX_ERROR)
       return Strings.ERR_MSG_SYNTAX_ERROR

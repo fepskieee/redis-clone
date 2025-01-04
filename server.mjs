@@ -45,6 +45,7 @@ server.on("connection", (socket) => {
         )
       }
     } catch (error) {
+      console.log(error)
       response = `-ERR unknown command '${parseData.command}'\r\n`
     }
     socket.write(response)

@@ -1,4 +1,4 @@
-const storeMap = new Map()
+export const storeMap = new Map()
 
 const get = (key) => {
   return storeMap.get(key)
