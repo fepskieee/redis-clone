@@ -6,6 +6,7 @@ import Lists from "./Lists.mjs"
 import Sets from "./Sets.mjs"
 import PubSub from "./pubsub/PubSub.mjs"
 import Keyspace from "./Keyspace.mjs"
+import transactions from "../commands/transactions.mjs"
 
 const namespace = getCurrentFilename(import.meta.url)
 const nedisLogger = logger(namespace)
@@ -17,6 +18,7 @@ const commandCategories = {
   lists: Lists,
   sets: Sets,
   pubsub: PubSub,
+  transactions: transactions,
   keyspace: Keyspace,
 }
 

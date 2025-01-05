@@ -7,7 +7,7 @@ import { getCurrentFilename } from "./src/utils/helpers.mjs"
 import PubSub from "./src/services/pubsub/PubSub.mjs"
 
 const server = net.createServer()
-const host = process.env.HOST || "127.0.0.1"
+const host = process.env.HOST || "192.168.68.101" || "127.0.0.1"
 const port = process.env.PORT || 6379
 
 const namespace = getCurrentFilename(import.meta.url)
