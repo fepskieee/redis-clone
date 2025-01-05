@@ -4,7 +4,7 @@ import pLimit from "p-limit"
 import config from "../../configs/config.json" with { type: "json" }
 import { logger } from "../../configs/logger.mjs"
 import { lookUpCommand } from "../../models/command-lookup.mjs"
-import { nedis } from "../nedis.mjs"
+import nedis from "../nedis.mjs"
 import { getCurrentFilename } from "../../utils/helpers.mjs"
 
 const namespace = getCurrentFilename(import.meta.url)
