@@ -36,6 +36,12 @@ server.on("connection", (socket) => {
 
     try {
       const { type } = lookUpCommand(parseData.command)
+
+      if (["COMMAND", "INFO"].includes(parseData.command)) {
+        response = `-ERR unknown command '${parseData.command}'\r\n`
+        throw new Error(`${parseData.command} is ignored`)
+      }
+
       const data = { parseData, type, socket }
       response = nedis.executeCommand(data)
 
@@ -45,9 +51,10 @@ server.on("connection", (socket) => {
         )
       }
     } catch (error) {
-      console.log(error)
+      console.log(error.message)
       response = `-ERR unknown command '${parseData.command}'\r\n`
     }
+    console.log(response)
     socket.write(response)
   })
 
