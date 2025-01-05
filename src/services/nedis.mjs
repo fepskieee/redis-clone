@@ -7,6 +7,8 @@ import Sets from "./Sets.mjs"
 import PubSub from "./pubsub/PubSub.mjs"
 import Keyspace from "./Keyspace.mjs"
 import transactions from "../commands/transactions.mjs"
+import { flagMap, transactionMap } from "../models/dataStore.mjs"
+import nesp from "../utils/nesp.js"
 
 const namespace = getCurrentFilename(import.meta.url)
 const nedisLogger = logger(namespace)
@@ -18,16 +20,21 @@ const commandCategories = {
   lists: Lists,
   sets: Sets,
   pubsub: PubSub,
-  transactions: transactions,
+  transactions,
   keyspace: Keyspace,
 }
 
 const executeCommand = (data) => {
   const { parseData, type, socket } = data
   const { command, args } = parseData
-
   const category = commandCategories[type]
-  const response = category[command](args, type, socket)
+
+  let response
+  if (flagMap.get("MULTI").isEnabled) {
+    response = transactions.MULTI(command, args)
+  } else {
+    response = category[command](args, type, socket)
+  }
 
   if (persistence.mode === "aof" || persistence.mode === "both") {
     response.charAt(0) !== "-" && persistence.aofLogCommand({ command, args })
