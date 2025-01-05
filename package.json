@@ -6,7 +6,8 @@
   "main": "server.mjs",
   "scripts": {
     "server": "node --watch server.mjs",
-    "cli": "memurai-cli -h 127.0.0.1 -p 6379",
+    "red": "wsl redis-cli -h 192.168.68.101 -p 6379",
+    "mem": "memurai-cli -h 192.168.68.101 -p 6379",
     "ncat": "bash -c 'if [ -f \"./reconnect_ncat.sh\" ]; then ./reconnect_ncat.sh; else ncat 127.0.0.1 6379; fi'",
     "telnet": "telnet 127.0.0.1 6379",
     "test": "vitest --watch",
