@@ -61,9 +61,11 @@ const initialize = async () => {
   await persistence.restore()
 }
 
-export const nedis = {
+const nedis = {
   parseCommand,
   executeCommand,
   initialize,
   commandCategories,
 }
+
+export default nedis

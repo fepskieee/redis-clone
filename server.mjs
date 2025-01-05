@@ -2,7 +2,7 @@ import net from "net"
 import { logger } from "./src/configs/logger.mjs"
 import { lookUpCommand } from "./src/models/command-lookup.mjs"
 import { setClient, deleteClient, getClientMap } from "./src/models/clients.mjs"
-import { nedis } from "./src/services/nedis.mjs"
+import nedis from "./src/services/nedis.mjs"
 import { getCurrentFilename } from "./src/utils/helpers.mjs"
 import PubSub from "./src/services/pubsub/PubSub.mjs"
 
