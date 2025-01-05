@@ -1,5 +1,5 @@
 import { EventEmitter } from "events"
-import subscribers from "../../models/subscribers.mjs"
+import { subscriberMap } from "../../models/dataStore.mjs"
 import channels from "../../models/channels.mjs"
 
 export default class PubSub extends EventEmitter {
@@ -16,24 +16,29 @@ export default class PubSub extends EventEmitter {
     // socket.isPubSubClient = true
     // socket.subscribedCount = (socket.subscribedCount || 0) + 1
 
-    if (!subscribers.has(topic)) {
-      subscribers.set(topic, new Set())
+    if (!subscriberMap.has(topic)) {
+      subscriberMap.set(topic, new Set())
     }
-    subscribers.get(topic).add(socket)
+    subscriberMap.get(topic).add(socket)
 
     if (!channels.has(socket)) {
       channels.set(socket, new Set())
     }
     channels.get(socket).add(topic)
 
-    this.emitter.on("message", (topic, message) => {
-      subscribers.get(topic).forEach((client) => {
-        console.log(topic)
-        client.write(
-          `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
-        )
-      })
-    })
+    // this.emitter.on("message", (topic, message) => {
+    //   console.log("i am emitting to", topic, message)
+    //   socket.write(
+    //     `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+    //   )
+    // })
+    // subscriberMap.get(topic).forEach((subscriber) => {
+    //   console.log(topic)
+    //   subscriber.write(
+    //     `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+    //   )
+    // })
+
     // this.emitter.on("message", (topic, message) => {
     //   subscribers.get(topic).forEach((client) => {
     //     console.log("subscribe")
@@ -53,36 +58,36 @@ export default class PubSub extends EventEmitter {
     //   }
     // })
 
-    return `+OK\r\n`
-    // return `*3\r\n$9\r\nsubscribe\r\n$${topic.length}\r\n${topic}\r\n:${
-    //   subscribers.get(topic).size
-    // }\r\n`
+    // return `+OK\r\n`
+    return `*3\r\n$9\r\nsubscribe\r\n$${topic.length}\r\n${topic}\r\n:${
+      channels.get(socket).size
+    }\r\n`
   }
 
   static PUBLISH(args, type, socket) {
     const [topic, message] = args
-    const connectedSubscribers = subscribers.get(topic)
+    const subscribers = subscriberMap.get(topic)
 
-    if (!connectedSubscribers || connectedSubscribers.size === 0) {
+    if (!subscribers || subscribers.size === 0) {
       return `:0\r\n`
     }
 
-    this.emitter.emit("message", topic, message)
-    // connectedSubscribers.forEach((subscriber) => {
-    //   console.log("publish")
-    //   subscriber.write(
-    //     `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
-    //   )
-    // })
+    // this.emitter.emit("message", topic, message)
+    subscribers.forEach((subscriber) => {
+      console.log("publish")
+      subscriber.write(
+        `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
+      )
+    })
 
-    return `:${connectedSubscribers.size}\r\n`
+    return `:${subscribers.size}\r\n`
   }
 
   static UNSUBSCRIBE(args, type, socket) {
     const [topic] = args
 
-    if (subscribers.has(topic)) {
-      subscribers.get(topic).delete(socket)
+    if (subscriberMap.has(topic)) {
+      subscriberMap.get(topic).delete(socket)
     }
 
     if (channels.has(socket)) {
@@ -103,8 +108,8 @@ export default class PubSub extends EventEmitter {
     if (channels.has(socket)) {
       const topics = channels.get(socket)
       topics.forEach((channel) => {
-        if (subscribers.has(channel)) {
-          subscribers.get(channel).delete(socket)
+        if (subscriberMap.has(channel)) {
+          subscriberMap.get(channel).delete(socket)
         }
       })
       topics.delete(socket)
