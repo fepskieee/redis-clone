@@ -187,6 +187,48 @@
       "args": ["hyperloglog"]
     }
   },
+  "json": {
+    "SET": {
+      "description": "Sets the JSON value for a given key. Creates the key if it does not exist.",
+      "args": ["key", "value"]
+    },
+    "GET": {
+      "description": "Retrieves the JSON value stored at the specified key.",
+      "args": ["key"]
+    },
+    "DEL": {
+      "description": "Deletes a specific path in a JSON object, or the entire key if no path is provided.",
+      "args": ["key", "path"]
+    },
+    "TYPE": {
+      "description": "Returns the type of the value stored at the specified key or path (e.g., object, array, or primitive).",
+      "args": ["key", "path"]
+    },
+    "ARRAPPEND": {
+      "description": "Appends a value to an array in a JSON object at the specified path.",
+      "args": ["key", "path", "value"]
+    },
+    "STRLEN": {
+      "description": "Returns the length of a string value in a JSON object at the specified path.",
+      "args": ["key", "path"]
+    },
+    "MGET": {
+      "description": "Retrieves the values of multiple JSON keys.",
+      "args": ["keys"]
+    },
+    "OBJKEYS": {
+      "description": "Returns the keys of a JSON object at the specified path.",
+      "args": ["key", "path"]
+    },
+    "OBJLEN": {
+      "description": "Returns the number of keys in a JSON object at the specified path.",
+      "args": ["key", "path"]
+    },
+    "ARRLEN": {
+      "description": "Returns the length of an array in a JSON object at the specified path.",
+      "args": ["key", "path"]
+    }
+  },
   "transactions": {
     "MULTI": {
       "description": "Marks the start of a transaction block",
