@@ -52,7 +52,8 @@ server.on("connection", (socket) => {
       }
     } catch (error) {
       console.log(error.message)
-      response = `-ERR unknown command '${parseData.command}'\r\n`
+      response = `-ERR ${error.message}\r\n`
+      // response = `-ERR unknown command '${parseData.command}'\r\n`
     }
     console.log(response)
     socket.write(response)

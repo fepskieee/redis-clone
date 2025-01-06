@@ -1,6 +1,7 @@
 import { logger } from "../configs/logger.mjs"
 import { getCurrentFilename } from "../utils/helpers.mjs"
 import PersistenceManager from "./persistence/PersistenceManager.mjs"
+import json from "../commands/json.mjs"
 import Strings from "./Strings.mjs"
 import Lists from "./Lists.mjs"
 import Sets from "./Sets.mjs"
@@ -19,7 +20,7 @@ const commandCategories = {
   strings: Strings,
   lists: Lists,
   sets: Sets,
-  json: json,
+  json,
   pubsub: PubSub,
   transactions,
   keyspace: Keyspace,
