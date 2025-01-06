@@ -19,6 +19,7 @@ const commandCategories = {
   strings: Strings,
   lists: Lists,
   sets: Sets,
+  json: json,
   pubsub: PubSub,
   transactions,
   keyspace: Keyspace,
