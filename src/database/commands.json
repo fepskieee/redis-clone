@@ -188,43 +188,43 @@
     }
   },
   "json": {
-    "SET": {
+    "JSON.SET": {
       "description": "Sets the JSON value for a given key. Creates the key if it does not exist.",
       "args": ["key", "value"]
     },
-    "GET": {
+    "JSON.GET": {
       "description": "Retrieves the JSON value stored at the specified key.",
       "args": ["key"]
     },
-    "DEL": {
+    "JSON.DEL": {
       "description": "Deletes a specific path in a JSON object, or the entire key if no path is provided.",
       "args": ["key", "path"]
     },
-    "TYPE": {
+    "JSON.TYPE": {
       "description": "Returns the type of the value stored at the specified key or path (e.g., object, array, or primitive).",
       "args": ["key", "path"]
     },
-    "ARRAPPEND": {
+    "JSON.ARRAPPEND": {
       "description": "Appends a value to an array in a JSON object at the specified path.",
       "args": ["key", "path", "value"]
     },
-    "STRLEN": {
+    "JSON.STRLEN": {
       "description": "Returns the length of a string value in a JSON object at the specified path.",
       "args": ["key", "path"]
     },
-    "MGET": {
+    "JSON.MGET": {
       "description": "Retrieves the values of multiple JSON keys.",
       "args": ["keys"]
     },
-    "OBJKEYS": {
+    "JSON.OBJKEYS": {
       "description": "Returns the keys of a JSON object at the specified path.",
       "args": ["key", "path"]
     },
-    "OBJLEN": {
+    "JSON.OBJLEN": {
       "description": "Returns the number of keys in a JSON object at the specified path.",
       "args": ["key", "path"]
     },
-    "ARRLEN": {
+    "JSON.ARRLEN": {
       "description": "Returns the length of an array in a JSON object at the specified path.",
       "args": ["key", "path"]
     }
