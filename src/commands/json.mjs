@@ -21,7 +21,7 @@ const set = ([key, path = "$", value, options = {}]) => {
 
   const existingValue = JSON.parse(storeMap.get(key))
   if (typeof existingValue !== "object") {
-    throw new Error("Existing key is not a valid JSON object")
+    throw new Error(`Cannot create property '$' on ${existingValue}`)
   }
 
   if (NX && !_pathExists(JSON.parse(existingValue), path)) {
@@ -39,7 +39,7 @@ const set = ([key, path = "$", value, options = {}]) => {
 }
 
 const get = () => {
-  console.log("json set")
+  console.table(storeMap)
   return nesp.simpleString("OK")
 }
 
@@ -50,6 +50,8 @@ const type = () => {
 
 const json = {
   "JSON.SET": set,
+  "JSON.GET": get,
+  "JSON.TYPE": type,
 }
 
 export default json

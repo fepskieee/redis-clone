@@ -11,22 +11,23 @@ export const _pathExists = (json, path) => {
 
 export const _setValueAtPath = (json, path, value) => {
   const pathSegments = path.split(".").filter(Boolean)
+  let current = json
 
   if (pathSegments.length === 1 && pathSegments[0] === "$") {
-    return { ...json, ...value }
+    current = value
+
+    return current
   }
 
-  let current = json
   pathSegments.forEach((key, index) => {
-    if (index === pathSegments.length - 1) {
-      current[key] = { ...current[key], ...value }
-    } else {
-      if (!current[key] || typeof current[key] !== "object") {
-        current[key] = {}
-      }
-      current = current[key]
+    if (!current[key] || typeof current[key] !== "object") {
+      current[key] = {}
     }
+    current = current[key]
   })
 
-  return json
+  const lastSegment = pathSegments[pathSegments.length - 1]
+  current[lastSegment] = value
+
+  return current
 }
