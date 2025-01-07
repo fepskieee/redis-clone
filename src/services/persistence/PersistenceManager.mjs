@@ -1,7 +1,6 @@
 import config from "../../configs/config.json" with { type: "json" }
-import { logger, logWithLine } from "../../configs/logger.mjs"
+import { logger } from "../../configs/logger.mjs"
 import store from "../../models/store.mjs"
-import timer from "../../models/timer.mjs"
 import AOFPersistence from "./AOFPersistence.mjs"
 import SnapshotPersistence from "./SnapshotPersistence.mjs"
 import { getCurrentFilename } from "../../utils/helpers.mjs"
@@ -46,23 +45,13 @@ export default class PersistenceManager {
 
   async saveSnapshot() {
     try {
-      // const storeSnapshot = storeMap && Object.keys(storeMap).length > 0 
-      // ? new Map(Object.entries(storeMap)) 
-      // : new Map()
-      
-      // const timerSnapshot = timerMap && Object.keys(timerMap).length > 0 
-      // ? new Map(Object.entries(timerMap)) 
-      // : new Map()
-
       const snapshot = {
         storeMap: Object.fromEntries(store.getStoreMap()),
-        // TODO: timerMap: Object.fromEntries(timer.getTimerMap())
       }
 
       await this.snapshot.save(snapshot)
     } catch (err) {
       pmLogger.error(err, `Failed to save snapshot: ${err.message}`)
-      // throw new Error(`Snapshot error ${err.message}`)
     }
   }
 
@@ -79,11 +68,5 @@ export default class PersistenceManager {
     } catch (err) {
       pmLogger.error(`Failed to restore data: ${err}`)
     }
-  }
-
-  async handleCorruptedFile() {
-    // Backup corrupted file
-    // Load most recent valid snapshot
-    // Replay valid AOF entries
   }
 }

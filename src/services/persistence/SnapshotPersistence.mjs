@@ -4,7 +4,6 @@ import path, {dirname} from "path"
 import config from "../../configs/config.json" with { type: "json" }
 import { logger } from "../../configs/logger.mjs"
 import store from "../../models/store.mjs"
-import timer from "../../models/timer.mjs"
 import { getCurrentFilename } from "../../utils/helpers.mjs"
 
 const __filename = fileURLToPath(import.meta.url);
@@ -59,9 +58,7 @@ export default class SnapshotPersistence {
       const data = await fs.readFile(this.db, "utf-8")
 
       const {storeMap} = JSON.parse(data)
-      // const {storeMap, timerMap} = JSON.parse(data)
       if (!storeMap) {
-      // if (!storeMap || !timerMap) {
         throw new Error("Invalid snapshot structure")
       }
       
@@ -69,18 +66,11 @@ export default class SnapshotPersistence {
       ? new Map(Object.entries(storeMap)) 
       : new Map()
       
-      // const timerSnapshot = timerMap && Object.keys(timerMap).length > 0 
-      // ? new Map(Object.entries(timerMap)) 
-      // : new Map()
-      
       snapshotLogger.info("Snapshot loaded successfully...")
       store.setStoreMap(storeSnapshot)
-      // timer.setTimerMap(timerSnapshot)
     } catch (err) {
       if (err.code === "ENOENT") {
         snapshotLogger.info("Snapshot file not found. Creating a new one...")
-        // const emptyData = { storeMap: {}, timerMap: {} }
-        // await fs.writeFile(this.db, JSON.stringify(emptyData, null, 2))
       }
 
       snapshotLogger.error(`Failed to load snapshot: ${err.message}`)

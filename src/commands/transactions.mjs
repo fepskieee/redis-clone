@@ -1,6 +1,4 @@
-import { subscribe } from "diagnostics_channel"
-import { logger } from "../configs/logger.mjs"
-import { flagMap, storeMap, transactionMap } from "../models/dataStore.mjs"
+import { flagMap, transactionMap } from "../models/dataStore.mjs"
 import { lookUpCommand } from "../models/command-lookup.mjs"
 import nedis from "../services/nedis.mjs"
 import nesp from "../utils/nesp.js"
@@ -42,7 +40,6 @@ export const exec = () => {
   transactionMap.clear()
 
   return nesp.exec(response)
-  // return nesp.simpleString("DONE")
 }
 
 export const discard = () => {
