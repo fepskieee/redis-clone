@@ -16,8 +16,8 @@ class Keyspace {
       return `:0\r\n`
     }
 
-    store.delete(key)
-    timer.delete(key)
+    store.del(key)
+    timer.del(key)
 
     return `:1\r\n`
   }
