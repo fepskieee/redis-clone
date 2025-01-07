@@ -20,8 +20,9 @@ const set = ([key, path = "$", value, options = {}]) => {
   }
 
   const existingValue = JSON.parse(storeMap.get(key))
-  if (typeof existingValue !== "object") {
-    throw new Error(`Cannot create property '$' on ${existingValue}`)
+
+  if (path !== "$" && typeof existingValue !== "object") {
+    throw new Error(`Path is invalid for existing string value`)
   }
 
   if (NX && !_pathExists(JSON.parse(existingValue), path)) {
@@ -33,7 +34,7 @@ const set = ([key, path = "$", value, options = {}]) => {
   }
 
   const updatedValue = _setValueAtPath(existingValue, path, JSON.parse(value))
-  storeMap.set(key, JSON.stringify(updatedValue))
+  storeMap.set(key, updatedValue)
 
   return nesp.simpleString("OK")
 }
