@@ -22,10 +22,6 @@ class Keyspace {
     return `:1\r\n`
   }
 
-  static EXISTS([key]) {
-    return store.has(key) ? `:1\r\n` : `:0\r\n`
-  }
-
   static EXPIRE([key, seconds]) {
     if (!key || !seconds) {
       return `:0\r\n`
