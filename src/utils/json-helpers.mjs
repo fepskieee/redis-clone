@@ -31,3 +31,21 @@ export const _setValueAtPath = (json, path, value) => {
 
   return json
 }
+
+export const _getValueAtPath = (json, paths) => {
+  const pathSegments = paths[0].slice(1).split(".").filter(Boolean)
+
+  let current = json
+  for (const segment of pathSegments) {
+    if (
+      !current ||
+      typeof current !== "object" ||
+      !current.hasOwnProperty(segment)
+    ) {
+      return undefined
+    }
+    current = current[segment]
+  }
+
+  return current
+}

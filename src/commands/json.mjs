@@ -1,6 +1,10 @@
 import { logger } from "../configs/logger.mjs"
 import { storeMap } from "../models/dataStore.mjs"
-import { _pathExists, _setValueAtPath } from "../utils/json-helpers.mjs"
+import {
+  _getValueAtPath,
+  _pathExists,
+  _setValueAtPath,
+} from "../utils/json-helpers.mjs"
 import nesp from "../utils/nesp.js"
 
 const jsonLogger = logger("json")
@@ -42,24 +46,32 @@ const set = ([key, path = "$", value, option]) => {
   return nesp.simpleString("OK")
 }
 
-const get = ([key, path]) => {
-  console.table(storeMap.get(key))
+const get = ([key, ...paths], type) => {
   if (!key) {
     return nesp.simpleError(
       `ERR wrong number of arguments for JSON.GET command`
     )
   }
 
+  if (type !== "json") {
+    return nesp.simpleError(
+      "WRONGTYPE Operation against a key holding the wrong kind of value"
+    )
+  }
+
+  const isRoot = paths[0] === "$"
+
   if (!storeMap.has(key)) return nesp.bulkString()
+  if (isRoot) return nesp.bulkString(storeMap.get(key))
 
-  const jsonValue = storeMap.get(key)
+  const parseJson = JSON.parse(storeMap.get(key))
+
   try {
-    const parseJson = JSON.parse(jsonValue)
-    const value = _set
-  } catch (error) {}
-  const jsonString = storeMap.get(key)
-
-  return nesp.bulkString("HELLO WORLD")
+    const value = _getValueAtPath(parseJson, paths)
+    return nesp.bulkString(JSON.stringify(value))
+  } catch (error) {
+    throw new Error(error.message)
+  }
 }
 
 const type = () => {
