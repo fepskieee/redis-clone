@@ -5,12 +5,11 @@ import nesp from "../utils/nesp.js"
 
 const jsonLogger = logger("json")
 
-const set = ([key, path = "$", value, options = {}]) => {
-  const { NX, XX } = options
+const set = ([key, path = "$", value, option]) => {
   const isRoot = path === "$"
 
   if (!storeMap.has(key)) {
-    if (XX) return nesp.bulkString()
+    if (option) return nesp.bulkString()
     if (!isRoot) {
       throw new Error("Path must be root ($) for new keys")
     }
@@ -21,27 +20,46 @@ const set = ([key, path = "$", value, options = {}]) => {
 
   const existingValue = JSON.parse(storeMap.get(key))
 
-  if (path !== "$" && typeof existingValue !== "object") {
-    throw new Error(`Path is invalid for existing string value`)
+  if (
+    !isRoot &&
+    typeof existingValue === "object" &&
+    !_pathExists(path, existingValue)
+  ) {
+    throw new Error(`Path is invalid for the existing value`)
   }
 
-  if (NX && !_pathExists(JSON.parse(existingValue), path)) {
+  if (option && !_pathExists(path, existingValue)) {
     return nesp.simpleString()
   }
 
-  if (XX && !_pathExists(JSON.parse(existingValue), path)) {
+  if (option && !_pathExists(path, existingValue)) {
     return nesp.simpleString()
   }
 
   const updatedValue = _setValueAtPath(existingValue, path, JSON.parse(value))
-  storeMap.set(key, updatedValue)
+  storeMap.set(key, JSON.stringify(updatedValue))
 
   return nesp.simpleString("OK")
 }
 
-const get = () => {
-  console.table(storeMap)
-  return nesp.simpleString("OK")
+const get = ([key, path]) => {
+  console.table(storeMap.get(key))
+  if (!key) {
+    return nesp.simpleError(
+      `ERR wrong number of arguments for JSON.GET command`
+    )
+  }
+
+  if (!storeMap.has(key)) return nesp.bulkString()
+
+  const jsonValue = storeMap.get(key)
+  try {
+    const parseJson = JSON.parse(jsonValue)
+    const value = _set
+  } catch (error) {}
+  const jsonString = storeMap.get(key)
+
+  return nesp.bulkString("HELLO WORLD")
 }
 
 const type = () => {
@@ -49,10 +67,10 @@ const type = () => {
   return nesp.simpleString("OK")
 }
 
-const json = {
+const existingValue = {
   "JSON.SET": set,
   "JSON.GET": get,
   "JSON.TYPE": type,
 }
 
-export default json
+export default existingValue

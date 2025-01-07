@@ -1,8 +1,8 @@
 import { JSONPath } from "jsonpath-plus"
 
-export const _pathExists = (json, path) => {
+export const _pathExists = (path, json) => {
   try {
-    const result = JSONPath(path, json)
+    const result = JSONPath({ path, json })
     return result.length > 0
   } catch (error) {
     return false
@@ -19,7 +19,9 @@ export const _setValueAtPath = (json, path, value) => {
 
   pathSegments.forEach((segment) => {
     if (!current[segment] || typeof current[segment] !== "object") {
-      current[segment] = {}
+      if (!_pathExists(path, json)) {
+        current[segment] = {}
+      }
     }
     current = current[segment]
   })
@@ -27,5 +29,5 @@ export const _setValueAtPath = (json, path, value) => {
   const lastSegment = pathSegments[pathSegments.length - 1]
   current[lastSegment] = value
 
-  return JSON.stringify(current)
+  return json
 }
