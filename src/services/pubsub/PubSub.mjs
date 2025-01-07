@@ -35,7 +35,6 @@ export default class PubSub extends EventEmitter {
     }
 
     subscribers.forEach((subscriber) => {
-      console.log("publish")
       subscriber.write(
         `*3\r\n$7\r\nmessage\r\n$${topic.length}\r\n${topic}\r\n$${message.length}\r\n${message}\r\n`
       )

@@ -51,10 +51,8 @@ server.on("connection", (socket) => {
         )
       }
     } catch (error) {
-      console.log(error.message)
       response = `-ERR ${error.message}\r\n`
     }
-    console.log(response)
     socket.write(response)
   })
 
