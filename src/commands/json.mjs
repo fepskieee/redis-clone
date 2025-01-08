@@ -1,5 +1,6 @@
 import { logger } from "../configs/logger.mjs"
 import { storeMap } from "../models/dataStore.mjs"
+import jsonpath from "jsonpath"
 import {
   _getValueAtPath,
   _pathExists,
@@ -26,7 +27,7 @@ const set = ([key, path = "$", value, option]) => {
 
   if (
     !isRoot &&
-    typeof existingValue === "object" &&
+    typeof existingValue !== "object" &&
     !_pathExists(path, existingValue)
   ) {
     throw new Error(`Path is invalid for the existing value`)
@@ -64,11 +65,12 @@ const get = ([key, ...paths], type) => {
   if (!storeMap.has(key)) return nesp.bulkString()
   if (isRoot) return nesp.bulkString(storeMap.get(key))
 
-  const parseJson = JSON.parse(storeMap.get(key))
-
   try {
-    const value = _getValueAtPath(parseJson, paths)
-    return nesp.bulkString(JSON.stringify(value))
+    const parseJson = JSON.parse(storeMap.get(key))
+    const values = _getValueAtPath(parseJson, paths)
+    // const result = values.reduce((accumulator, currentValue, index) => accumulator +,{})
+
+    return nesp.bulkString(JSON.stringify(values))
   } catch (error) {
     throw new Error(error.message)
   }
