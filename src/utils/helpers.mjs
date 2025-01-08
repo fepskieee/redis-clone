@@ -1,3 +1,5 @@
+import jsonpath from "jsonpath"
+export { jsonpath as jp }
 import path from "path"
 import { fileURLToPath } from "url"
 
